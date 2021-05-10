@@ -23,6 +23,7 @@ SOFTWARE.
 #include "../ArmorDetector_TRD/ArmorDetector.h"
 #include "../ArmorDetector_TRD/Armor.hpp"
 
+
 namespace hnurm
 {
 
