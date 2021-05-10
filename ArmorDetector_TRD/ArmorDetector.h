@@ -32,13 +32,12 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <vector>
 #include <string>
 #include "Armor.hpp"
+#include "../Protocol/protocol.h"
 
-using namespace cv;
 using namespace std;
 
 namespace hnurm
 {
-
     //struct for param
     struct Param
     {
@@ -147,6 +146,8 @@ namespace hnurm
         vector<LightBarInfo>       final_lights;               //3 light bars sifted,with light information
         vector<Armor>              all_armors;                 //3 armors info,for vertexes and the center of amor
 
+    private:
+        Protocol::Self_color my_color;
     };//armordetector
 
 
