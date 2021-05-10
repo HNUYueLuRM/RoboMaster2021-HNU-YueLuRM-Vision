@@ -11,7 +11,7 @@ namespace hnurm
     class Remapor
     {
     public:
-
+        
         Remapor(Size _armor_size):armor_size(_armor_size){}
 
         ~Remapor(){}
