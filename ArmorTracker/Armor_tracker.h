@@ -5,24 +5,24 @@
 namespace hnurm {
 	class Armor_tracker {
 	public:	
-		// ¹¹Ôìº¯Êý
+		// ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 		Armor_tracker();
 
-		// Îö¹¹º¯Êý
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		~Armor_tracker() = default;
 
-		//³õÊ¼»¯tracker
+		//ï¿½ï¿½Ê¼ï¿½ï¿½tracker
         void init_tracker(const Rect& roi, const cv::Mat& image);
 
-		// ¸üÐÂÄ¿±ê¿ò
+		// ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
 		Rect Update(cv::Mat& image);
 
 		Point2d Update_and_Get_center(cv::Mat& image);
-		// ²âÊÔ²¿·Ö
+		// ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
 		void test_case(string video_path, string groundturth_path);
 		
 	private:
-		// kcf×·×ÙÆ÷
+		// kcf×·ï¿½ï¿½ï¿½ï¿½
         //KCF	*_kcf_tracker;
         unique_ptr<KCF> _kcf_tracker;
 	};

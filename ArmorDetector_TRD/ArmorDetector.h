@@ -122,7 +122,8 @@ namespace hnurm
         vector<Armor>              all_armors;                 //3 armors info,for vertexes and the center of amor
 
     private:
-        Protocol::Self_color my_color;
+
+        Protocol::Self_color my_color;//where and when to get mycolor from serial or TaskSwitcher?
 
     };//armordetector
 

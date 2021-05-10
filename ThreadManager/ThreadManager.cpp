@@ -1,5 +1,5 @@
 #pragma once
-#include"../ThreadManager/ThreadManager.h"
+#include"ThreadManager/ThreadManager.h"
 #include<iostream>
 #include<exception>
 #include<memory>

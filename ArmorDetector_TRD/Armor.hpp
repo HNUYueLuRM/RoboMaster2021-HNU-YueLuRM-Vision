@@ -52,6 +52,8 @@ namespace hnurm
         void GetSVMImg(Mat& cut_remap)
         {
             //do some project transformation and cut here.
+
+            
         }
 
     public:

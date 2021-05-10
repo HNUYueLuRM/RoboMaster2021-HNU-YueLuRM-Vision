@@ -1,10 +1,8 @@
 /* kiko@idiospace.com */
 
-#ifndef _PROTOCOL_H_
-#define _PROTOCOL_H_
 
 //#define __packed __attribute__((packed))
-
+#pragma once
 #include <string>
 #include "stdint.h"  
 
@@ -88,4 +86,3 @@ private:
 };
 
 }
-#endif

@@ -19,11 +19,10 @@ SOFTWARE.
 
         Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 **************************************************************/
+
 #pragma once
 #include "../ArmorDetector_TRD/ArmorDetector.h"
 #include "../ArmorDetector_TRD/Armor.hpp"
-
-
 
 namespace hnurm
 {
@@ -54,30 +53,34 @@ void ArmorDetector::Detect(const Mat& raw_frame, Armor& target)
 
 void ArmorDetector::SubtractRB()
 {
-   uchar *praw_pixel = (uchar*) raw_img.data;
-   uchar *pdst_pixel = (uchar*) subtract_img.data;
-   int pixel_number =  raw_img.rows *  raw_img.cols;
-   if (my_color == Protocol::Self_color::blue)
-   {
-       for (int i = 0; i < pixel_number; i++)
-       {
-           if (*(praw_pixel + 2) - *praw_pixel > param.brightness_threshold_value)
+    uchar *praw_pixel = (uchar*) raw_img.data;
+    uchar *pdst_pixel = (uchar*) subtract_img.data;
+    int pixel_number =  raw_img.rows *  raw_img.cols;
+    
+    if (my_color == Protocol::Self_color::blue)
+    {
+        for (int i = 0; i < pixel_number; i++)
+        {
+            if (*(praw_pixel + 2) - *praw_pixel > param.brightness_threshold_value)
+            {
                *pdst_pixel = 255;
-           praw_pixel += 3;
-           pdst_pixel++;
-       }
-   }
-   else if (my_color == Protocol::Self_color::red)
-   {
-       for (int i = 0; i < pixel_number; i++)
-       {
-           if (*praw_pixel - *(praw_pixel+2) > param.brightness_threshold_value)
-               *pdst_pixel = 255;
-           praw_pixel += 3;
-           pdst_pixel++;
-       }
-   }
-
+            }        
+            praw_pixel += 3;
+            pdst_pixel++;
+        }
+    }
+    else if (my_color == Protocol::Self_color::red)
+    {
+        for (int i = 0; i < pixel_number; i++)
+        {
+            if (*praw_pixel - *(praw_pixel+2) > param.brightness_threshold_value)
+            {
+                *pdst_pixel = 255;
+            }
+            praw_pixel += 3;
+            pdst_pixel++;
+        }
+    }
 }
 
 
@@ -158,7 +161,6 @@ void ArmorDetector::CreateBar()
 void ArmorDetector::SiftBar()
 {
     final_lights.clear();
-
     double self_ratio;
 
     for(int i=0;i< light_rect.size();i++)
@@ -184,7 +186,7 @@ void ArmorDetector::SiftBar()
 
    for (int i = 0; i <  final_lights.size(); i++)
    {
-       final_lights[i].DrawLightBar();
+       final_lights[i].DrawLightBar(raw_img);
    }
    imshow("sifted light rect", raw_img);
    waitKey(1)
@@ -269,12 +271,12 @@ int ArmorDetector::PairBars()
 
 #ifdef DEBUG
 
-    Mat AllPossibleArmor_img = raw_img.clone();
+    Mat all_possible_armor = raw_img.clone();
     for (int i = 0; i <  all_armors.size(); i++)
     {
-        all_armors[i].DrawArmor(raw_img);
+        all_armors[i].DrawArmor(all_possible_armor);
     }
-    imshow("AllPossibleArmor_img", AllPossibleArmor_img);
+    imshow("all possible armor", all_possible_armor);
     waitKey(1);
 
 #endif
