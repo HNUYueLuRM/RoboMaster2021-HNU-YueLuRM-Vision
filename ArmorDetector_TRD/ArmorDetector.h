@@ -19,7 +19,7 @@ SOFTWARE.
 
 Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 **************************************************************/
-
+#pragma once
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/core.hpp>
 #include <opencv4/opencv2/imgproc/imgproc.hpp>
@@ -28,11 +28,11 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <math.h>
 #include <vector>
 #include <string>
 #include <math.h>
 #include "Armor.hpp"
+#include "LightBarInfo.hpp"
 #include "../Protocol/protocol.h"
 
 using namespace std;
@@ -47,48 +47,8 @@ namespace hnurm
         int gamma_redress_value;         //for gamma redress
         int ele_erode_x, ele_erode_y;    //erode kernel
         int ele_dilated_x, ele_dilated_y;//dilate kernel
-    };
 
-
-
-    //class to descript a light bar
-    class LightBarInfo
-    {
-    public:
-
-        LightBarInfo(){}
-
-        LightBarInfo(RotatedRect& _light_bar,int _long_edge,int _short_edge,bool _lean_flag)
-        {
-            light_bar=_light_bar;
-            long_edge=_long_edge;
-            short_edge=_short_edge;
-        }
-
-    public:
-
-        void DrawLightBar(Mat& canvas)
-        {
-            Point2f tmp_points[4];
-            light_bar.points(tmp_points);
-             for (int i = 0; i < 4; i++)
-            {
-                line(canvas, tmp_points[i], tmp_points[(i + 1) % 4], Scalar(0,255,0), 2);
-            }
-        }
-
-        double GetAngle(void)
-        {
-            return (long_edge==light_bar.size.width)?light_bar.angle:light_bar.angle-90;
-        }
-
-
-    public:
-
-        RotatedRect light_bar;
-        int long_edge;
-        int short_edge;
-        bool lean_flag;
+        //more params to go here...
     };
 
 
@@ -98,8 +58,10 @@ namespace hnurm
     {
     public:
 
+        //we need to do something when constructing..
         ArmorDetector();
 
+        //it seems that this could be deleted
         ~ArmorDetector()=default;
 
         //return with target Armor
@@ -120,7 +82,7 @@ namespace hnurm
         //sift the contours of possible lightbar
         void SiftBar(void);
 
-        //
+        //use two lightbars to create an armor
         void CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst);
 
         //pair those lightbars and mark them

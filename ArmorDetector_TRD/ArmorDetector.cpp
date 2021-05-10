@@ -19,7 +19,7 @@ SOFTWARE.
 
         Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 **************************************************************/
-
+#pragma once
 #include "../ArmorDetector_TRD/ArmorDetector.h"
 #include "../ArmorDetector_TRD/Armor.hpp"
 
@@ -35,7 +35,6 @@ ArmorDetector::ArmorDetector()
     erode_kernel=getStructuringElement(MORPH_RECT, Size(param.ele_erode_x, param.ele_erode_y));
     dilate_kernel=getStructuringElement(MORPH_RECT, Size(param.ele_dilated_x, param.ele_dilated_y));
 }
-
 
 
 
@@ -85,10 +84,10 @@ void ArmorDetector::SubtractRB()
 
 void ArmorDetector::GetCooked(void)
 {
-    SubtractRB();//we should test this function,compare it to matrix operation to tell which is faster cause opencv has some method to speedup this process using some hardware accleration
+    SubtractRB();
     dilate( subtract_img,  dilated_img, dilate_kernel);
     erode( dilated_img,  eroded_img, erode_kernel);
-    cvtColor(raw_img, brightness_img, cv::ColorConversionCodes::COLOR_BGR2GRAY);
+    cvtColor(raw_img, brightness_img, COLOR_BGR2GRAY);
     threshold( brightness_img,  brightness_img, param.brightness_threshold_value, 255, THRESH_BINARY);
 
     cooked_img = eroded_img & brightness_img;
@@ -140,7 +139,7 @@ void ArmorDetector::CreateBar()
                 {
                     continue;
                 }
-                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.width,temp_rrect.size.height,true));
+                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.width,temp_rrect.size.height));
             }
             else
             {
@@ -148,7 +147,7 @@ void ArmorDetector::CreateBar()
                 {
                     continue;
                 }
-                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.height,temp_rrect.size.width,false));
+                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.height,temp_rrect.size.width));
             }
         }
     }//loop
@@ -172,7 +171,7 @@ void ArmorDetector::SiftBar()
             continue;
         }
         //sift area
-        if(( light_rect[i].light_bar.size.area()<10) || ( light_rect[i].light_bar.size.area()>60000))
+        if(( light_rect[i].light_rect.size.area()<10) || ( light_rect[i].light_rect.size.area()>60000))
         {
             continue;
         }
@@ -225,10 +224,10 @@ int ArmorDetector::PairBars()
             width_ratio = width_s.second / width_s.first;
 
             //center difference indicated by y-axis diff
-            center_diff_ratio=height_s.first/abs( final_lights[i].light_bar.center.y- final_lights[j].light_bar.center.y);
+            center_diff_ratio=height_s.first/abs( final_lights[i].light_rect.center.y- final_lights[j].light_rect.center.y);
 
             //the ratio of their len and distance between two centers
-            relative_x=abs(2*( final_lights[i].light_bar.center.x- final_lights[j].light_bar.center.x)
+            relative_x=abs(2*( final_lights[i].light_rect.center.x- final_lights[j].light_rect.center.x)
                             /( final_lights[i].long_edge+ final_lights[j].long_edge));
 
             //judge conditions
@@ -256,7 +255,7 @@ int ArmorDetector::PairBars()
             Armor tmp_armor;
 
             //tell left or right
-            if ( final_lights[i].light_bar.center.x <  final_lights[j].light_bar.center.x)
+            if ( final_lights[i].light_rect.center.x <  final_lights[j].light_rect.center.x)
             {
                 CreateArmor(final_lights[i], final_lights[j], tmp_armor);
             }
@@ -290,7 +289,7 @@ int ArmorDetector::Choose()
     int tmp_distance=99999;
     for(int i=0;i< all_armors.size();i++)
     {
-         all_armors[i].GetCenter().x;
+         all_armors[i].core.x;
     }
 }
 

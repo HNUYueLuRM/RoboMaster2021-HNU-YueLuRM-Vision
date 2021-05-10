@@ -1,3 +1,4 @@
+#pragma once
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/core.hpp>
 #include <opencv4/opencv2/imgproc/imgproc.hpp>
@@ -40,11 +41,6 @@ namespace hnurm
 
     public:
 
-        Point2i GetCenter(void)
-        {
-            return core;
-        }
-
         void DrawArmor(Mat& canvas)
         {
             for (int i = 0; i < 4; i++)
@@ -58,7 +54,7 @@ namespace hnurm
             //do some project transformation and cut here.
         }
 
-    private:
+    public:
 
         Point2i vertexes[4];
         Point2i core;
