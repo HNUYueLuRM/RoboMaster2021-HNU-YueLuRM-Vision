@@ -39,7 +39,6 @@ namespace hnurm
 
         Armor(){}
 
-
         Armor(Point2f* armor_arr)
         {
             for(int i=0;i<4;i++)
@@ -61,22 +60,12 @@ namespace hnurm
             return temp_armor;
         }
 
-    public:
-
         void DrawArmor(Mat& canvas)
         {
             for (int i = 0; i < 4; i++)
             {
                 line(canvas, vertexes[i], vertexes[(i + 1) % 4], Scalar(0,255,0), 2);
             }
-        }
-
-        void GetSVMImg(Mat& cut_remap)
-        {
-            //do some project transformation and cut here.
-            //how to tell the bigger one and the small one?
-            //maybe we have to do this after redress ROI,but it cost too much ,cause we have to redress twice
-            
         }
 
     public:

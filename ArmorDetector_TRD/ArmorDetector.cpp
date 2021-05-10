@@ -21,8 +21,8 @@ SOFTWARE.
 **************************************************************/
 
 #pragma once
-#include "../ArmorDetector_TRD/ArmorDetector.h"
-#include "../ArmorDetector_TRD/Armor.hpp"
+#include "ArmorDetector.h"
+#include "Armor.hpp"
 
 namespace hnurm
 {
@@ -42,7 +42,7 @@ void ArmorDetector::Detect(const Mat& raw_frame, Armor& target)
     GetCooked();
     CreateBar();
     SiftBar();
-    if(PairBars())
+    if(PairBars()) //for overboundary check
     {
         target=all_armors[Choose()];
     }
@@ -55,7 +55,7 @@ void ArmorDetector::SubtractRB()
     uchar *praw_pixel = (uchar*) raw_img.data;
     uchar *pdst_pixel = (uchar*) subtract_img.data;
     int pixel_number =  raw_img.rows *  raw_img.cols;
-    
+
     if (my_color == Protocol::Self_color::blue)
     {
         for (int i = 0; i < pixel_number; i++)
@@ -63,7 +63,7 @@ void ArmorDetector::SubtractRB()
             if (*(praw_pixel + 2) - *praw_pixel > param.brightness_threshold_value)
             {
                *pdst_pixel = 255;
-            }        
+            }
             praw_pixel += 3;
             pdst_pixel++;
         }
@@ -86,6 +86,7 @@ void ArmorDetector::SubtractRB()
 
 void ArmorDetector::GetCooked(void)
 {
+    GammaRedress();
     SubtractRB();
     dilate( subtract_img,  dilated_img, dilate_kernel);
     erode( dilated_img,  eroded_img, erode_kernel);
@@ -178,6 +179,7 @@ void ArmorDetector::SiftBar()
         }
 
             final_lights.push_back(light_rect[i]);
+
     }
 
 
@@ -208,9 +210,51 @@ void ArmorDetector::CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst
     tmp_points[2].y=rrect.core.y-rrect.long_edge*sin(rrect.angle);
     tmp_points[3].x=rrect.core.x-rrect.long_edge*cos(rrect.angle);
     tmp_points[3].y=rrect.core.y+rrect.long_edge*sin(rrect.angle);
-    
-    Armor tmp_armor(tmp_points);
-    dst = tmp_armor; 
+
+    Armor temp_armor(tmp_points);
+    dst = temp_armor;
+}
+
+
+
+void ArmorDetector::GammaRedress(void)
+{
+    unsigned char lut[256];
+    for(int i=0;i < 256;i++)
+    {
+        lut[i] = saturate_cast<uchar>(pow((float)i/255.0,param.gamma_redress_value) * 255.0f);
+    }
+    gamma_img = raw_img.clone();
+    int channels = raw_img.channels();
+    switch(channels)
+    {
+        case 1:
+        {
+            MatIterator_<uchar> it = gamma_img.begin<uchar>();
+            MatIterator_<uchar> end = gamma_img.end<uchar>();
+            while(it != end)
+            {
+                *it = lut[(*it)];
+                it ++;
+            }
+            break;
+        }
+        case 3:
+            {
+                MatIterator_<Vec3b> it = gamma_img.begin<Vec3b>();
+                MatIterator_<Vec3b> end = gamma_img.end<Vec3b>();
+                while(it != end)
+                {
+                    (*it)[0] = lut[(*it)[0]];
+                    (*it)[1] = lut[(*it)[1]];
+                    (*it)[2] = lut[(*it)[2]];
+                    it ++;
+                }
+            break;
+            }
+        default:
+            break;
+    }
 }
 
 
@@ -248,7 +292,7 @@ int ArmorDetector::PairBars()
             //TODO:
             //use mark to fluentlize this process,make it less sharp
 
- 
+
             if(height_ratio>1.8)
             {
                 continue;
@@ -261,7 +305,7 @@ int ArmorDetector::PairBars()
             {
                 continue;
             }
-            else if( (relative_x > 5) || (relative_x < 0.2) )  //light 5.5  armorbig 23.5  armorsmall 13.7
+            else if( (relative_x > 5) || (relative_x < 0.2) )  //lightlength 5.5  armorbiglength 23.5  armorsmalllength 13.7
             {
                 continue;
             }
@@ -271,11 +315,21 @@ int ArmorDetector::PairBars()
             if ( final_lights[i].light_rect.center.x <  final_lights[j].light_rect.center.x)
             {
                 CreateArmor(final_lights[i], final_lights[j], tmp_armor);
+                //
+                if(0/*SVM match*/)
+                {
+                    continue;
+                }
             }
             else
             {
                 CreateArmor(final_lights[j], final_lights[i], tmp_armor);
+                 if(0/*SVM match*/)
+                {
+                    continue;
+                }
             }
+            all_armors.push_back(tmp_armor);//after all sift conditions,it proves to be a real armor
            //traverse all pairs
         }//loop 1
     }//loop 2
@@ -300,12 +354,19 @@ int ArmorDetector::PairBars()
 
 int ArmorDetector::Choose()
 {
-    int distance=100000;
-    int tmp_distance=99999;
+    int distance=10000000;
+    int tmp_distance=9999999;
+    int index = -1;
     for(int i=0;i< all_armors.size();i++)
     {
-         all_armors[i].core.x;
+        tmp_distance=pow(all_armors[i].core.x,2)+pow(all_armors[i].core.y,2);
+        if(tmp_distance<distance)
+        {
+            distance=tmp_distance;
+            index=i;
+        }
     }
+    return index;
 }
 
 

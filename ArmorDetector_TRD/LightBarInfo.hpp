@@ -43,7 +43,7 @@ namespace hnurm
             light_rect=_light_rect;
             long_edge=_long_edge;
             short_edge=_short_edge;
-            angle = (long_edge==light_rect.size.width) ? light_rect.angle : light_rect.angle-90;//regulate
+            angle = (long_edge==light_rect.size.width) ? -light_rect.angle : -light_rect.angle+90;//regulate
             core=light_rect.center;
         }
 

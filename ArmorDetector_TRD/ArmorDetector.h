@@ -36,6 +36,7 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include "../Protocol/protocol.h"
 
 using namespace std;
+using namespace cv; 
 
 namespace hnurm
 {
@@ -85,13 +86,15 @@ namespace hnurm
         //use two lightbars to create an armor
         void CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst);
 
+        //
+        void GammaRedress(void);
+
         //pair those lightbars and mark them
         int PairBars(void);
 
         //choose one armor to attack
         //return with the index of choosed armor
         int Choose(void);
-
 
     private:
         Param param;
