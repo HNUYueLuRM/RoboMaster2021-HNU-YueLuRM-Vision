@@ -31,6 +31,7 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <math.h>
 #include <vector>
 #include <string>
+#include <math.h>
 #include "Armor.hpp"
 #include "../Protocol/protocol.h"
 
@@ -57,7 +58,7 @@ namespace hnurm
 
         LightBarInfo(){}
 
-        LightBarInfo(RotatedRect& _light_bar,int _long_edge,int _short_edge)
+        LightBarInfo(RotatedRect& _light_bar,int _long_edge,int _short_edge,bool _lean_flag)
         {
             light_bar=_light_bar;
             long_edge=_long_edge;
@@ -66,9 +67,20 @@ namespace hnurm
 
     public:
 
-        void DrawLightBar(void);
+        void DrawLightBar(Mat& canvas)
+        {
+            Point2f tmp_points[4];
+            light_bar.points(tmp_points);
+             for (int i = 0; i < 4; i++)
+            {
+                line(canvas, tmp_points[i], tmp_points[(i + 1) % 4], Scalar(0,255,0), 2);
+            }
+        }
 
-        void GetAngle(void);
+        double GetAngle(void)
+        {
+            return (long_edge==light_bar.size.width)?light_bar.angle:light_bar.angle-90;
+        }
 
 
     public:
@@ -76,6 +88,7 @@ namespace hnurm
         RotatedRect light_bar;
         int long_edge;
         int short_edge;
+        bool lean_flag;
     };
 
 
@@ -108,7 +121,7 @@ namespace hnurm
         void SiftBar(void);
 
         //
-        void CreateArmor(int left_index, int right_index, Armor& dst);
+        void CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst);
 
         //pair those lightbars and mark them
         int PairBars(void);
@@ -128,26 +141,27 @@ namespace hnurm
         //mat for image processing,which store some mediate images
         //maybe we can pack these varas into a struct...
 
-        Mat raw_img;					//1原始图像
-        Mat gamma_img;                //2伽马矫正过后的图像
-        Mat subtract_img;             //3image after subtracting G/B
-        Mat filter_img;               //4filter these img above using a kernel
-        Mat brightness_img;           //5颜色二值化图片
+        Mat raw_img;				//1原始图像
+        Mat gamma_img;              //2伽马矫正过后的图像
+        Mat subtract_img;           //3image after subtracting G/B
+        Mat filter_img;             //4filter these img above using a kernel
+        Mat brightness_img;         //5颜色二值化图片
         Mat eroded_img;				//6【eroded】
-        Mat dilated_img;				//7【dilated]
-        Mat cooked_img;               //process done
+        Mat dilated_img;		    //7【dilated]
+        Mat cooked_img;             //process done
 
 
     private:
         //vetors for the lightbar(contours and bars)
         vector<vector<Point>>      light_contours;             //1 function cv::findcontour() will return a series of coutours,composed by points.
-        vector<Vec4i>              light_hierachy;          	//1
+        vector<Vec4i>              light_hierachy;             //1
         vector<LightBarInfo>       light_rect;                 //2 refer {minAreaRect} to store lightbar rects
         vector<LightBarInfo>       final_lights;               //3 light bars sifted,with light information
         vector<Armor>              all_armors;                 //3 armors info,for vertexes and the center of amor
 
     private:
         Protocol::Self_color my_color;
+
     };//armordetector
 
 

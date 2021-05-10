@@ -45,35 +45,37 @@ void ArmorDetector::Detect(const Mat& raw_frame, Armor& target)
     GetCooked();
     CreateBar();
     SiftBar();
-    PairBars();
-    target=all_armors[Choose()];
+    if(PairBars())
+    {
+        target=all_armors[Choose()];
+    }
 }
 
 
 
 void ArmorDetector::SubtractRB()
 {
-   uchar *pdata = (uchar*) raw_img.data;
-   uchar *qdata = (uchar*) subtract_img.data;
-   int srcData =  raw_img.rows *  raw_img.cols;
+   uchar *praw_pixel = (uchar*) raw_img.data;
+   uchar *pdst_pixel = (uchar*) subtract_img.data;
+   int pixel_number =  raw_img.rows *  raw_img.cols;
    if (my_color == Protocol::Self_color::blue)
    {
-       for (int i = 0; i < srcData; i++)
+       for (int i = 0; i < pixel_number; i++)
        {
-           if (*(pdata + 2) - *pdata > param.brightness_threshold_value)
-               *qdata = 255;
-           pdata += 3;
-           qdata++;
+           if (*(praw_pixel + 2) - *praw_pixel > param.brightness_threshold_value)
+               *pdst_pixel = 255;
+           praw_pixel += 3;
+           pdst_pixel++;
        }
    }
    else if (my_color == Protocol::Self_color::red)
    {
-       for (int i = 0; i < srcData; i++)
+       for (int i = 0; i < pixel_number; i++)
        {
-           if (*pdata - *(pdata+2) > param.brightness_threshold_value)
-               *qdata = 255;
-           pdata += 3;
-           qdata++;
+           if (*praw_pixel - *(praw_pixel+2) > param.brightness_threshold_value)
+               *pdst_pixel = 255;
+           praw_pixel += 3;
+           pdst_pixel++;
        }
    }
 
@@ -83,7 +85,7 @@ void ArmorDetector::SubtractRB()
 
 void ArmorDetector::GetCooked(void)
 {
-    SubtractRB();
+    SubtractRB();//we should test this function,compare it to matrix operation to tell which is faster cause opencv has some method to speedup this process using some hardware accleration
     dilate( subtract_img,  dilated_img, dilate_kernel);
     erode( dilated_img,  eroded_img, erode_kernel);
     cvtColor(raw_img, brightness_img, cv::ColorConversionCodes::COLOR_BGR2GRAY);
@@ -107,16 +109,17 @@ void ArmorDetector::GetCooked(void)
 
 void ArmorDetector::CreateBar()
 {
-    RotatedRect temp_rrect;
      light_contours.clear();
     //light_hierachy.clear();
+
+    RotatedRect temp_rrect;
+
     findContours(cooked_img,  light_contours, /*light_hierachy,*/ RETR_EXTERNAL , CHAIN_APPROX_SIMPLE, Point(0, 0));
     for (int i = 0; i <  light_contours.size(); i++)
     {
         if ((3 <=  light_contours[i].size()) && ( light_contours[i].size() <= 200))
         {
             temp_rrect = minAreaRect( light_contours[i]);
-
 
     //pre-sift lightbars
     /*  due to the fking opencv4 angle system,we gotta do this process:
@@ -131,14 +134,13 @@ void ArmorDetector::CreateBar()
      *   y-axis
      */
 
-
             if(temp_rrect.size.width>temp_rrect.size.height)
             {
                 if(temp_rrect.angle > -63)
                 {
                     continue;
                 }
-                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.width,temp_rrect.size.height));
+                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.width,temp_rrect.size.height,true));
             }
             else
             {
@@ -146,7 +148,7 @@ void ArmorDetector::CreateBar()
                 {
                     continue;
                 }
-                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.height,temp_rrect.size.width));
+                 light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.height,temp_rrect.size.width,false));
             }
         }
     }//loop
@@ -158,25 +160,25 @@ void ArmorDetector::SiftBar()
 {
     final_lights.clear();
 
-   double self_ratio;
+    double self_ratio;
 
-   for(int i=0;i< light_rect.size();i++)
-   {
-       self_ratio= light_rect[i].long_edge/ light_rect[i].short_edge;
+    for(int i=0;i< light_rect.size();i++)
+    {
+        self_ratio= light_rect[i].long_edge/ light_rect[i].short_edge;
 
-       //sift ration
-       if((self_ratio<1.5) || (self_ratio>12))
-       {
-           continue;
-       }
-       //sift area
-       if(( light_rect[i].light_bar.size.area()<5) || ( light_rect[i].light_bar.size.area()>60000))
-       {
-           continue;
-       }
+        //sift ratio
+        if((self_ratio<1.5) || (self_ratio>12))
+        {
+            continue;
+        }
+        //sift area
+        if(( light_rect[i].light_bar.size.area()<10) || ( light_rect[i].light_bar.size.area()>60000))
+        {
+            continue;
+        }
 
-        final_lights.push_back(light_rect[i]);
-   }
+            final_lights.push_back(light_rect[i]);
+    }
 
 
 #ifdef DEBUG
@@ -192,16 +194,16 @@ void ArmorDetector::SiftBar()
 }
 
 
-void ArmorDetector::CreateArmor(int left_index,int right_index, Armor& dst)
+void ArmorDetector::CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst)
 {
-
+    Point2i tl,dl,tr,dr;
+    double angle1,angle2;
 
 }
 
 
 int ArmorDetector::PairBars()
 {
-     all_armors.clear();
      all_armors.clear();
 
     //int mark = 0;
@@ -227,19 +229,13 @@ int ArmorDetector::PairBars()
 
             //the ratio of their len and distance between two centers
             relative_x=abs(2*( final_lights[i].light_bar.center.x- final_lights[j].light_bar.center.x)
-                           /( final_lights[i].long_edge+ final_lights[j].long_edge));
+                            /( final_lights[i].long_edge+ final_lights[j].long_edge));
 
             //judge conditions
             //TODO:
             //use mark to fluentlize this process,make it less sharp
 
-            //problems happen here,cause the annoying angle system of opencv!
-            //maybe we need four if-elses... that's too complex!
-            //probably we gonna delete this judge item
-            //    if(angle_diff>40)// ANGLE!!!!
-            //    {
-            //        continue;
-            //    }
+ 
             if(height_ratio>1.8)
             {
                 continue;
@@ -254,19 +250,19 @@ int ArmorDetector::PairBars()
             }
             else if( (relative_x > 5) || (relative_x < 0.2) )  //light 5.5  armorbig 23.5  armorsmall 13.7
             {
-                //more thing to do here!
-                //tell big armors and small armors using relative_x?
                 continue;
             }
+
             Armor tmp_armor;
+
             //tell left or right
             if ( final_lights[i].light_bar.center.x <  final_lights[j].light_bar.center.x)
             {
-                CreateArmor(i, j, tmp_armor);
+                CreateArmor(final_lights[i], final_lights[j], tmp_armor);
             }
             else
             {
-                CreateArmor(j, i, tmp_armor);
+                CreateArmor(final_lights[j], final_lights[i], tmp_armor);
             }
            //traverse all pairs
         }//loop 1
@@ -277,7 +273,7 @@ int ArmorDetector::PairBars()
     Mat AllPossibleArmor_img = raw_img.clone();
     for (int i = 0; i <  all_armors.size(); i++)
     {
-        DrawBox(AllPossibleArmor_img,  all_armors[i].vertexes, Scalar(255, 255, 255), 4);
+        all_armors[i].DrawArmor(raw_img);
     }
     imshow("AllPossibleArmor_img", AllPossibleArmor_img);
     waitKey(1);

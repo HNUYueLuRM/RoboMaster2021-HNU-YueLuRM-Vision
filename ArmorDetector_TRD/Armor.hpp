@@ -45,17 +45,17 @@ namespace hnurm
             return core;
         }
 
-        void DrawArmor(Mat& draw_armor)
+        void DrawArmor(Mat& canvas)
         {
             for (int i = 0; i < 4; i++)
             {
-                line(draw_armor, vertexes[i], vertexes[(i + 1) % 4], Scalar(0,255,0), 2);
+                line(canvas, vertexes[i], vertexes[(i + 1) % 4], Scalar(0,255,0), 2);
             }
         }
 
-        void GetSVMBox(double left_len,double right_len,double angle)
+        void GetSVMImg(Mat& cut_remap)
         {
-
+            //do some project transformation and cut here.
         }
 
     private:
