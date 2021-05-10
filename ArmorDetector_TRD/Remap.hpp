@@ -52,11 +52,20 @@ namespace hnurm
         }
 
 
+        void GetTrait(void)
+        {
+            trait_vector = remaped_mat.reshape(1, 1);
+            trait_vector.convertTo(trait_vector, CV_32FC1);
+        }
+
+
     private:
+
         Size armor_size;
         Mat origin_img;
         Mat transform_mat;
         Mat remaped_mat;
+        Mat trait_vector;
 
     };
 
