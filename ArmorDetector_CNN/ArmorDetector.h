@@ -5,7 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <vector>
 #include <memory>
 #include "../Protocol/protocol.h"

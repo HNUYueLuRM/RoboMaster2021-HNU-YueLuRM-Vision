@@ -1,4 +1,4 @@
-#include "ArmorDetector.h"
+#include "../ArmorDetector_CNN/ArmorDetector.h"
 #include <time.h>
 namespace hnurm{
 
@@ -28,9 +28,11 @@ namespace hnurm{
         int dst_h = effect_roi.height;
         float width_ratio = (float)src_w / (float)dst_w;
         float height_ratio = (float)src_h / (float)dst_h;
-        for(size_t i = 0; i < target_boxs.size(); i++){
+        for(size_t i = 0; i < target_boxs.size(); i++)
+        {
             const BoxInfo& box = target_boxs[i];
-            if(_my_color == box.label){ // red
+            if(_my_color == box.label)
+            { // red
 
                     temp_rect = cv::Rect(
                             cv::Point((box.x1 - effect_roi.x) * width_ratio, (box.y1 - effect_roi.y) * height_ratio),
@@ -38,7 +40,8 @@ namespace hnurm{
                     temp_rects.push_back(temp_rect);
 
             }
-            else {//blue
+            else 
+            {//blue
 
                     temp_rect = cv::Rect(
                             cv::Point((box.x1 - effect_roi.x) * width_ratio, (box.y1 - effect_roi.y) * height_ratio),
@@ -57,14 +60,17 @@ namespace hnurm{
         float distance;
         float MIN_distance = 10000000;
         int i = 0;
-        for(i = 0; i < temp_rects.size(); i++){
+        for(i = 0; i < temp_rects.size(); i++)
+        {
             cv::rectangle(raw_image, temp_rects[i], cv::Scalar(0,255,255),2);
         }
-        for(i = 0; i < temp_rects.size(); i++){
+        for(i = 0; i < temp_rects.size(); i++)
+        {
             temp_rect_center_x = temp_rects[i].x + temp_rects[i].width / 2;
             temp_rect_center_y = temp_rects[i].y + temp_rects[i].height / 2;
             distance = sqrt((temp_rect_center_x - image_center_x) * (temp_rect_center_x - image_center_x) + (temp_rect_center_y - image_center_y) * (temp_rect_center_y - image_center_y));
-            if(MIN_distance > distance){
+            if(MIN_distance > distance)
+            {
                 MIN_distance = distance;
                 final_index = i;
             }
@@ -93,15 +99,18 @@ namespace hnurm{
 
         int tmp_w = 0;
         int tmp_h = 0;
-        if (ratio_src > ratio_dst) {
+        if (ratio_src > ratio_dst) 
+        {
             tmp_w = dst_w;
             tmp_h = floor((dst_w * 1.0 / w) * h);
         }
-        else if (ratio_src < ratio_dst) {
+        else if (ratio_src < ratio_dst) 
+        {
             tmp_h = dst_h;
             tmp_w = floor((dst_h * 1.0 / h) * w);
         }
-        else {
+        else 
+        {
             cv::resize(src, dst, dst_size);
             effect_area.x = 0;
             effect_area.y = 0;
@@ -114,10 +123,12 @@ namespace hnurm{
         cv::Mat tmp;
         cv::resize(src, tmp, cv::Size(tmp_w, tmp_h));
 
-        if (tmp_w != dst_w) {
+        if (tmp_w != dst_w) 
+        {
             int index_w = floor((dst_w - tmp_w) / 2.0);
             //std::cout << "index_w: " << index_w << std::endl;
-            for (int i = 0; i < dst_h; i++) {
+            for (int i = 0; i < dst_h; i++) 
+            {
                 memcpy(dst.data + i * dst_w * 3 + index_w * 3, tmp.data + i * tmp_w * 3, tmp_w * 3);
             }
             effect_area.x = index_w;
@@ -125,7 +136,8 @@ namespace hnurm{
             effect_area.width = tmp_w;
             effect_area.height = tmp_h;
         }
-        else if (tmp_h != dst_h) {
+        else if (tmp_h != dst_h)
+        {
             int index_h = floor((dst_h - tmp_h) / 2.0);
             //std::cout << "index_h: " << index_h << std::endl;
             memcpy(dst.data + index_h * dst_w * 3, tmp.data, tmp_w * tmp_h * 3);
@@ -134,7 +146,8 @@ namespace hnurm{
             effect_area.width = tmp_w;
             effect_area.height = tmp_h;
         }
-        else {
+        else 
+        {
             printf("error\n");
         }
         //cv::imshow("dst", dst);

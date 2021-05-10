@@ -1,3 +1,25 @@
+/**************************************************************
+                    MIT License
+        Copyright (c) 2021 HNU-YueLuRM-Vision
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+        Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
+**************************************************************/
+
 #pragma once
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/core.hpp>
@@ -16,12 +38,13 @@ namespace hnurm
 
         LightBarInfo(){}
 
-        LightBarInfo(RotatedRect& _light_rect,int _long_edge,int _short_edge)
+        LightBarInfo(RotatedRect& _light_rect,float _long_edge,float _short_edge)
         {
             light_rect=_light_rect;
             long_edge=_long_edge;
             short_edge=_short_edge;
-            angle=long_edge==light_rect.size.width ? light_rect.angle : light_rect.angle-90;
+            angle = (long_edge==light_rect.size.width) ? light_rect.angle : light_rect.angle-90;//regulate
+            core=light_rect.center;
         }
 
         LightBarInfo operator=(const LightBarInfo& light_bar_info)
@@ -31,6 +54,7 @@ namespace hnurm
             tmp.light_rect=light_bar_info.light_rect;
             tmp.long_edge=light_bar_info.long_edge;
             tmp.short_edge=light_bar_info.short_edge;
+            tmp.core=light_bar_info.core;
             return tmp;
         }
 
@@ -49,8 +73,9 @@ namespace hnurm
     public:
 
         RotatedRect light_rect;
-        int long_edge;
-        int short_edge;
+        Point2f core;
+        float long_edge;
+        float short_edge;
         double angle;
     };
 }

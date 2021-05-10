@@ -2,7 +2,7 @@
 
 
 //#define __packed __attribute__((packed))
-#pragma once
+
 #include <string>
 #include "stdint.h"  
 
@@ -56,6 +56,7 @@ public:
 
     struct Vision_recv_data
     {
+        Vision_recv_data(){};
         Vision_recv_data(Self_color self_color_, int actuator_id_, Work_mode mode_,  Bullet_speed speed_):
             self_color(self_color_), actuator_id(actuator_id_), mode(mode_), speed(speed_)
         {

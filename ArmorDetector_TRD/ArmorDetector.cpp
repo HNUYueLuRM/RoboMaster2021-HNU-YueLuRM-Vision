@@ -27,7 +27,6 @@ SOFTWARE.
 namespace hnurm
 {
 
-
 ArmorDetector::ArmorDetector()
 {
     param;
@@ -195,12 +194,25 @@ void ArmorDetector::SiftBar()
 }
 
 
+
 void ArmorDetector::CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst)
 {
-    Point2i tl,dl,tr,dr;
-    double angle1,angle2;
-
+    Point2f tmp_points[4];// 0tl 1dl 2tr 3dr
+    //left light
+    tmp_points[0].x=lrect.core.x+lrect.long_edge*cos(lrect.angle);
+    tmp_points[0].y=lrect.core.y-lrect.long_edge*sin(lrect.angle);
+    tmp_points[1].x=lrect.core.x-lrect.long_edge*cos(lrect.angle);
+    tmp_points[1].y=lrect.core.y+lrect.long_edge*sin(lrect.angle);
+    //right light
+    tmp_points[2].x=rrect.core.x+rrect.long_edge*cos(rrect.angle);
+    tmp_points[2].y=rrect.core.y-rrect.long_edge*sin(rrect.angle);
+    tmp_points[3].x=rrect.core.x-rrect.long_edge*cos(rrect.angle);
+    tmp_points[3].y=rrect.core.y+rrect.long_edge*sin(rrect.angle);
+    
+    Armor tmp_armor(tmp_points);
+    dst = tmp_armor; 
 }
+
 
 
 int ArmorDetector::PairBars()
@@ -255,7 +267,6 @@ int ArmorDetector::PairBars()
             }
 
             Armor tmp_armor;
-
             //tell left or right
             if ( final_lights[i].light_rect.center.x <  final_lights[j].light_rect.center.x)
             {
@@ -284,6 +295,8 @@ int ArmorDetector::PairBars()
     return (int) all_armors.size();
 
 }
+
+
 
 int ArmorDetector::Choose()
 {
