@@ -33,7 +33,7 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <math.h>
 #include "Armor.hpp"
 #include "LightBarInfo.hpp"
-#include "Remapor.hpp"
+#include "Defaker.hpp""
 #include "../Protocol/protocol.h"
 
 using namespace std;
@@ -49,7 +49,7 @@ namespace hnurm
         int gamma_redress_value;         //for gamma redress
         int ele_erode_x, ele_erode_y;    //erode kernel
         int ele_dilated_x, ele_dilated_y;//dilate kernel
-        Size armor_size;
+        Size vector_size;
         //more params to go here...
     };
 
@@ -96,6 +96,10 @@ namespace hnurm
         //choose one armor to attack
         //return with the index of choosed armor
         int Choose(void);
+
+        
+
+        void Reset(void);
 
     private:
         Param param;

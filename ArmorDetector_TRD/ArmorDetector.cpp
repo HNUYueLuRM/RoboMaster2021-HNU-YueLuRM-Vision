@@ -29,7 +29,7 @@ namespace hnurm
 
 ArmorDetector::ArmorDetector()
 {
-    param;
+//    param;  read param files
     erode_kernel=getStructuringElement(MORPH_RECT, Size(param.ele_erode_x, param.ele_erode_y));
     dilate_kernel=getStructuringElement(MORPH_RECT, Size(param.ele_dilated_x, param.ele_dilated_y));
 }
@@ -46,10 +46,11 @@ void ArmorDetector::Detect(const Mat& raw_frame, Armor& target)
     {
         target=all_armors[Choose()];
     }
+    Reset();
 }
 
 
-
+//we need to test this process to tell which is faster
 void ArmorDetector::SubtractRB()
 {
     uchar *praw_pixel = (uchar*) raw_img.data;
@@ -87,6 +88,9 @@ void ArmorDetector::SubtractRB()
 void ArmorDetector::GetCooked(void)
 {
     GammaRedress();
+//  split
+//  subtract
+//  threshold
     SubtractRB();
     dilate( subtract_img,  dilated_img, dilate_kernel);
     erode( dilated_img,  eroded_img, erode_kernel);
@@ -111,30 +115,29 @@ void ArmorDetector::GetCooked(void)
 
 void ArmorDetector::CreateBar()
 {
-     light_contours.clear();
-    //light_hierachy.clear();
-
     RotatedRect temp_rrect;
 
-    findContours(cooked_img,  light_contours, /*light_hierachy,*/ RETR_EXTERNAL , CHAIN_APPROX_SIMPLE, Point(0, 0));
-    for (int i = 0; i <  light_contours.size(); i++)
+    findContours(cooked_img, light_contours, /*light_hierachy,*/ RETR_EXTERNAL, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    for (int i = 0; i < light_contours.size(); i++)
     {
-        if ((3 <=  light_contours[i].size()) && ( light_contours[i].size() <= 200))
+        if ((3 <= light_contours[i].size()) && (light_contours[i].size() <= 200))
         {
-            temp_rrect = minAreaRect( light_contours[i]);
+            temp_rrect = minAreaRect(light_contours[i]);
 
-    //pre-sift lightbars
-    /*  due to the fking opencv4 angle system,we gotta do this process:
-     *   ————————————————————>  x-axis
-     *   |   ________ width
-     *   |   |      |           opencv angle system: spin the x axis anti-clockwise,
-     *   |   |______| height    when it is parallel to an edge of your RotatedRect,that
-     *   |                      edge would be set as width,though another pair would be
-     *   |                      height.by doing this,the angle x-axis has passed would be
-     *   |                      RotatedRect.angle
-     *   v                      so angle would ranged between [0,90)
-     *   y-axis
-     */
+            //pre-sift lightbars
+            /*  due to the fking opencv4 angle system,we gotta do this process:
+            *   ————————————————————>  x-axis
+            *   |   ________ width
+            *   |   |      |           opencv angle system: spin the x axis anti-clockwise,
+            *   |   |______| height    when it is parallel to an edge of your RotatedRect,that
+            *   |                      edge would be set as width,though another pair would be
+            *   |                      height.by doing this,the angle x-axis has passed would be
+            *   |                      RotatedRect.angle
+            *   v                      so angle would ranged between (-90,0]
+            *  y-axis                  then we regulate them using a class: LightBarInfo
+            *                          which record angle/longedge/shortedge/core of a light bar
+            *   
+            */
 
             if(temp_rrect.size.width>temp_rrect.size.height)
             {
@@ -153,69 +156,59 @@ void ArmorDetector::CreateBar()
                  light_rect.push_back(LightBarInfo(temp_rrect,temp_rrect.size.height,temp_rrect.size.width));
             }
         }
-    }//loop
+    } //loop
 }
-
-
 
 void ArmorDetector::SiftBar()
 {
-    final_lights.clear();
     double self_ratio;
 
-    for(int i=0;i< light_rect.size();i++)
+    for (int i = 0; i < light_rect.size(); i++)
     {
-        self_ratio= light_rect[i].long_edge/ light_rect[i].short_edge;
+        self_ratio = light_rect[i].long_edge / light_rect[i].short_edge;
 
         //sift ratio
-        if((self_ratio<1.5) || (self_ratio>12))
+        if ((self_ratio < 1.5) || (self_ratio > 12))
         {
             continue;
         }
         //sift area
-        if(( light_rect[i].light_rect.size.area()<10) || ( light_rect[i].light_rect.size.area()>60000))
+        if ((light_rect[i].light_rect.size.area() < 10) || (light_rect[i].light_rect.size.area() > 60000))
         {
             continue;
         }
-
-            final_lights.push_back(light_rect[i]);
-
+        final_lights.push_back(light_rect[i]);
     }
-
 
 #ifdef DEBUG
 
-   for (int i = 0; i <  final_lights.size(); i++)
-   {
-       final_lights[i].DrawLightBar(raw_img);
-   }
-   imshow("sifted light rect", raw_img);
-   waitKey(1)
+    for (int i = 0; i < final_lights.size(); i++)
+    {
+        final_lights[i].DrawLightBar(raw_img);
+    }
+    imshow("sifted light rect", raw_img);
+    waitKey(1)
 
 #endif
 }
 
-
-
-void ArmorDetector::CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst)
+void ArmorDetector::CreateArmor(LightBarInfo lrect, LightBarInfo rrect, Armor &dst)
 {
-    Point2f tmp_points[4];// 0tl 1dl 2tr 3dr
+    Point2f tmp_points[4]; // 0tl 1dl 2tr 3dr
     //left light
-    tmp_points[0].x=lrect.core.x+lrect.long_edge*cos(lrect.angle);
-    tmp_points[0].y=lrect.core.y-lrect.long_edge*sin(lrect.angle);
-    tmp_points[1].x=lrect.core.x-lrect.long_edge*cos(lrect.angle);
-    tmp_points[1].y=lrect.core.y+lrect.long_edge*sin(lrect.angle);
+    tmp_points[0].x = lrect.core.x + lrect.long_edge * cos(lrect.angle);
+    tmp_points[0].y = lrect.core.y - lrect.long_edge * sin(lrect.angle);
+    tmp_points[1].x = lrect.core.x - lrect.long_edge * cos(lrect.angle);
+    tmp_points[1].y = lrect.core.y + lrect.long_edge * sin(lrect.angle);
     //right light
-    tmp_points[2].x=rrect.core.x+rrect.long_edge*cos(rrect.angle);
-    tmp_points[2].y=rrect.core.y-rrect.long_edge*sin(rrect.angle);
-    tmp_points[3].x=rrect.core.x-rrect.long_edge*cos(rrect.angle);
-    tmp_points[3].y=rrect.core.y+rrect.long_edge*sin(rrect.angle);
+    tmp_points[2].x = rrect.core.x + rrect.long_edge * cos(rrect.angle);
+    tmp_points[2].y = rrect.core.y - rrect.long_edge * sin(rrect.angle);
+    tmp_points[3].x = rrect.core.x - rrect.long_edge * cos(rrect.angle);
+    tmp_points[3].y = rrect.core.y + rrect.long_edge * sin(rrect.angle);
 
     Armor temp_armor(tmp_points);
     dst = temp_armor;
 }
-
-
 
 void ArmorDetector::GammaRedress(void)
 {
@@ -261,9 +254,7 @@ void ArmorDetector::GammaRedress(void)
 
 int ArmorDetector::PairBars()
 {
-     all_armors.clear();
-
-    //int mark = 0;
+//    int mark = 0;
 
     pair<float,float> height_s,width_s;
     //for each pair of bars;
@@ -273,65 +264,61 @@ int ArmorDetector::PairBars()
     {
         for (int j = i + 1; j <  final_lights.size(); j++)
         {
-            //angle_diff = abs(SiftedLightRect[i].angle - SiftedLightRect[j].angle);
+//            angle_diff = abs(SiftedLightRect[i].angle - SiftedLightRect[j].angle);
 
-            height_s=std::minmax( final_lights[i].long_edge ,  final_lights[j].long_edge);
-            height_ratio = height_s.second/height_s.first;
+            height_s = std::minmax(final_lights[i].long_edge, final_lights[j].long_edge);
+            height_ratio = height_s.second / height_s.first;
 
-            width_s = std::minmax( final_lights[i].short_edge ,  final_lights[j].short_edge);
+            width_s = std::minmax(final_lights[i].short_edge, final_lights[j].short_edge);
             width_ratio = width_s.second / width_s.first;
 
-            //center difference indicated by y-axis diff
-            center_diff_ratio=height_s.first/abs( final_lights[i].light_rect.center.y- final_lights[j].light_rect.center.y);
+            //ratio indicated by y-axis diff
+            center_diff_ratio = height_s.first / abs(final_lights[i].light_rect.center.y - final_lights[j].light_rect.center.y);
 
             //the ratio of their len and distance between two centers
-            relative_x=abs(2*( final_lights[i].light_rect.center.x- final_lights[j].light_rect.center.x)
-                            /( final_lights[i].long_edge+ final_lights[j].long_edge));
+            relative_x = abs(2 * (final_lights[i].light_rect.center.x - final_lights[j].light_rect.center.x) 
+                               / (final_lights[i].long_edge + final_lights[j].long_edge));
 
             //judge conditions
             //TODO:
             //use mark to fluentlize this process,make it less sharp
 
+            if (height_ratio > 1.8)
+            {
+                continue;
+            }
+            else if (width_ratio > 4)
+            {
+                continue;
+            }
+            else if (center_diff_ratio < 2.5)
+            {
+                continue;
+            }
+            else if ((relative_x > 5) || (relative_x < 0.2)) //lightlength 5.5  armorbiglength 23.5  armorsmalllength 13.7
+            {
+                continue;
+            }
 
-            if(height_ratio>1.8)
-            {
-                continue;
-            }
-            else if(width_ratio>4)
-            {
-                continue;
-            }
-            else if(center_diff_ratio<2.5)
-            {
-                continue;
-            }
-            else if( (relative_x > 5) || (relative_x < 0.2) )  //lightlength 5.5  armorbiglength 23.5  armorsmalllength 13.7
-            {
-                continue;
-            }
-
-            Remapor remapor(param.armor_size);
+            Defaker defaker(param.vector_size);
             Armor tmp_armor;
-            Mat svm_vec;
+            int armor_num=0;
             //tell left or right
-            if ( final_lights[i].light_rect.center.x <  final_lights[j].light_rect.center.x)
+            if (final_lights[i].light_rect.center.x < final_lights[j].light_rect.center.x)
             {
                 CreateArmor(final_lights[i], final_lights[j], tmp_armor);
-                remapor.GetSvmVector(gamma_img,tmp_armor,svm_vec);
-                if(0/*svm*/)
-                {
-                    continue;
-                }
             }
             else
             {
                 CreateArmor(final_lights[j], final_lights[i], tmp_armor);
-                remapor.GetSvmVector(gamma_img,tmp_armor,svm_vec);
-                 if(0/*SVM match*/)
-                {
-                    continue;
-                }
             }
+            //continue if there is no number between these two lightbars
+            armor_num=defaker.Defake(gamma_img,tmp_armor);
+            if (!armor_num)
+            {
+                continue;
+            }
+//            tmp_armor.type=armor_num;
             all_armors.push_back(tmp_armor);//after all sift conditions,it proves to be a real armor
            //traverse all pairs
         }//loop 1
@@ -372,5 +359,13 @@ int ArmorDetector::Choose()
     return index;
 }
 
+
+
+void ArmorDetector::Reset()
+{
+    light_rect.clear();
+    final_lights.clear();
+    all_armors.clear();
+}
 
 }//namespace hnrm

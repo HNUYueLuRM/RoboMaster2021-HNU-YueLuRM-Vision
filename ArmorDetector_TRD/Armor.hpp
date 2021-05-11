@@ -32,6 +32,7 @@ using namespace std;
 
 namespace hnurm
 {
+    //enum ArmorType {}
 
     class Armor
     {
@@ -72,6 +73,7 @@ namespace hnurm
 
         Point2f vertexes[4];
         Point2f core;
+        //ArmorType type;
 
     };//Armor
 
