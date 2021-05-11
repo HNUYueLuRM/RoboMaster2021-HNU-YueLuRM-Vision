@@ -1,7 +1,8 @@
 /*kiko@idiospace.com 2020.01*/
 /*
-用于确定一帧图像的类
+ *用于确定一帧图像的类
 */
+
 #include<opencv2/opencv.hpp>
 
 

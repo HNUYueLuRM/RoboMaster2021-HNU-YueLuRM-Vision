@@ -36,7 +36,7 @@ namespace hnurm
 class SerialCodec: public Serial, public Protocol
 {
 public:
-    SerialCodec(){}
+    SerialCodec():my_color(Self_color::none){}
 
 public:
     // may get broke msg or don't get enough msg to decode, then return false
@@ -48,10 +48,12 @@ public:
     bool send_data(int cam_id, float pitch, float yaw, float distance);
 
     bool set_color(void);   //set color when initialize
+
     Protocol::Self_color get_color(void);
 
 private:
     Protocol::Self_color my_color;  //used for init color
+
 };
 
 

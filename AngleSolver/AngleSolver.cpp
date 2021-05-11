@@ -20,7 +20,6 @@ namespace hnurm
     }
     SerialData AngleSolver::Solve_Angle(float current_angle, float speed, cv::Rect &target_rect)
     {
-
         float distance = _distanceSolver->Solve_Distance(target_rect);
         float yaw_Angle = atan(_distanceSolver->_tVec.at<double>(0, 0) / _distanceSolver->_tVec.at<double>(2, 0)) / CV_PI * 180;
         float pitch_Angle = atan(_distanceSolver->_tVec.at<double>(1, 0) / _distanceSolver->_tVec.at<double>(2, 0)) ;

@@ -3,7 +3,7 @@
 #include"../Buffer/DataBuf.hpp"
 #include"../Buffer/SerialData.hpp"
 #include"../Buffer/ImageData.hpp"
-#include"../TaskSwitcher/Task_switcher.h"
+#include"TaskSwitcher/Task_switcher.h"
 #include"../VideoCapture/CamCapture.hpp"
 #include"../Protocol/protocol.h"
 #include"../Buffer/SolveEssential.h"

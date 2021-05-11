@@ -1,12 +1,11 @@
-#ifndef ARMORDETECTOR_H
-#define ARMORDETECTOR_H
+#pragma once
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <vector>
 #include <memory>
 #include "../Protocol/protocol.h"
@@ -34,8 +33,3 @@ namespace hnurm
         //Protocol::Self_color my_color;
     };
 };
-
-
-
-
-#endif
