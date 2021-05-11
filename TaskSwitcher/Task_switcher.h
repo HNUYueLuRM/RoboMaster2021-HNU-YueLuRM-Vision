@@ -6,7 +6,7 @@
 #include "../Buffer/ImageData.hpp"
 #include "../Buffer/SerialData.hpp"
 #include "../AngleSolver/AngleSolver.h"
-#include "../ArmorDetector/ArmorDetector.h"
+#include "../ArmorDetector_CNN/ArmorDetector.h"
 #include "../Protocol/protocol.h"
 #include "../Buffer/SolveEssential.h"
 

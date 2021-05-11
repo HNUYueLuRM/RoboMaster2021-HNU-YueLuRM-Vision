@@ -1,7 +1,5 @@
 /* kiko@idiospace.com */
 
-#ifndef _PROTOCOL_H_
-#define _PROTOCOL_H_
 
 //#define __packed __attribute__((packed))
 
@@ -23,7 +21,7 @@ public:
     enum class Work_mode: int { manual=0, auto_shoot=1, auto_windmill=2, auto_save=3, auto_grab=4 };
     enum class Self_color: int { none = 0B0000, red=0B0101, blue=0B1010 };
     enum class Bullet_speed: int { hero10 = 0, hero16 = 1, infantry15 = 2, infantry18 = 3, infantry30 = 4 };
-
+    
     typedef struct
     {
         struct
@@ -58,6 +56,7 @@ public:
 
     struct Vision_recv_data
     {
+        Vision_recv_data(){};
         Vision_recv_data(Self_color self_color_, int actuator_id_, Work_mode mode_,  Bullet_speed speed_):
             self_color(self_color_), actuator_id(actuator_id_), mode(mode_), speed(speed_)
         {
@@ -88,4 +87,3 @@ private:
 };
 
 }
-#endif
