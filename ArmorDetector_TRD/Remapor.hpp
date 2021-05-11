@@ -16,13 +16,16 @@ namespace hnurm
 
         ~Remapor(){}
 
-        void GetSVMImg(Mat& _origin_img,Armor& box,Mat& dst)
+        void GetSvmVector(Mat& _origin_img,Armor& box,Mat& dst)
         {
             origin_img=_origin_img;
+
             PreTreat();
             GetTransMat(box);
             Transform();
-            dst=remaped_mat;
+            GetTrait();
+            
+            dst=trait_vector;
         }
 
 

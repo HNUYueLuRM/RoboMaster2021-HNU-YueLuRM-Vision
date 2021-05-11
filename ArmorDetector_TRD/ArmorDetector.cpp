@@ -22,7 +22,7 @@ SOFTWARE.
 
 #pragma once
 #include "ArmorDetector.h"
-#include "Armor.hpp"
+
 
 namespace hnurm
 {
@@ -310,13 +310,15 @@ int ArmorDetector::PairBars()
                 continue;
             }
 
+            Remapor remapor(param.armor_size);
             Armor tmp_armor;
+            Mat svm_vec;
             //tell left or right
             if ( final_lights[i].light_rect.center.x <  final_lights[j].light_rect.center.x)
             {
                 CreateArmor(final_lights[i], final_lights[j], tmp_armor);
-                //
-                if(0/*SVM match*/)
+                remapor.GetSvmVector(gamma_img,tmp_armor,svm_vec);
+                if(0/*svm*/)
                 {
                     continue;
                 }
@@ -324,6 +326,7 @@ int ArmorDetector::PairBars()
             else
             {
                 CreateArmor(final_lights[j], final_lights[i], tmp_armor);
+                remapor.GetSvmVector(gamma_img,tmp_armor,svm_vec);
                  if(0/*SVM match*/)
                 {
                     continue;

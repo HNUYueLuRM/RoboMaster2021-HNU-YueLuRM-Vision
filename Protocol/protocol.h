@@ -21,7 +21,7 @@ public:
     enum class Work_mode: int { manual=0, auto_shoot=1, auto_windmill=2, auto_save=3, auto_grab=4 };
     enum class Self_color: int { none = 0B0000, red=0B0101, blue=0B1010 };
     enum class Bullet_speed: int { hero10 = 0, hero16 = 1, infantry15 = 2, infantry18 = 3, infantry30 = 4 };
-
+    
     typedef struct
     {
         struct

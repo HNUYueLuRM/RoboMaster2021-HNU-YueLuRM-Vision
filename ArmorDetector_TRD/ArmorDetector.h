@@ -33,6 +33,7 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <math.h>
 #include "Armor.hpp"
 #include "LightBarInfo.hpp"
+#include "Remapor.hpp"
 #include "../Protocol/protocol.h"
 
 using namespace std;
@@ -48,7 +49,7 @@ namespace hnurm
         int gamma_redress_value;         //for gamma redress
         int ele_erode_x, ele_erode_y;    //erode kernel
         int ele_dilated_x, ele_dilated_y;//dilate kernel
-
+        Size armor_size;
         //more params to go here...
     };
 
@@ -105,7 +106,6 @@ namespace hnurm
     private:
         //mat for image processing,which store some mediate images
         //maybe we can pack these varas into a struct...
-
         Mat raw_img;				//1原始图像
         Mat gamma_img;              //2伽马矫正过后的图像
         Mat subtract_img;           //3image after subtracting G/B
