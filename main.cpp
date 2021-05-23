@@ -10,7 +10,7 @@ int main()
     std::thread generate(&hnurm::ThreadManager::GenerateThread,std::ref(_thread_manager));
     std::thread process(&hnurm::ThreadManager::ProcessThread, std::ref(_thread_manager));
     std::thread send(&hnurm::ThreadManager::SendThread,std::ref(_thread_manager));
-    std::thread receive(&hnurm::ThreadManager::ReceiveThread, std::ref(_thread_manager));
+    //std::thread receive(&hnurm::ThreadManager::ReceiveThread, std::ref(_thread_manager));
 
     generate.join();
     process.join();

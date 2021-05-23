@@ -9,6 +9,7 @@
 #include "../ArmorDetector_CNN/ArmorDetector.h"
 #include "../Protocol/protocol.h"
 #include "../Buffer/SolveEssential.h"
+#include "../Protocol/protocol.h"
 
 namespace hnurm
 {
@@ -17,13 +18,19 @@ class Switcher
 {
 public:
     Switcher();
+
     ~Switcher() = default;
+
     void RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageData> &raw_image, Wrapped<SerialData> &solved_data);
-    void Init();
+
+    void SetEnemyColor(Protocol::Self_color mycolor);
+
+
 private:
     std::unique_ptr<Armor_tracker> _Armor_tracker;
     std::unique_ptr<AngleSolver> _Angle_solver;
     std::unique_ptr<ArmorDetector> _Armor_Detector;
-
+    Protocol::Self_color enemy_color;
 	};
+
 }

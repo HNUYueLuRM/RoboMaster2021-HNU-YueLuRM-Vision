@@ -13,20 +13,23 @@
 using namespace std;
 namespace hnurm
 {
-    struct object_rect{
+    struct object_rect
+    {
         int x;
         int y;
         int width;
         int height;
     };
 
-    class ArmorDetector{
+    class ArmorDetector
+    {
     public:
         ArmorDetector();
         ~ArmorDetector() = default;
-        int resize_uniform(cv::Mat& src, cv::Mat& dst, cv::Size dst_size, object_rect& effect_area);
+        int resize_uniform(cv::Mat &src, cv::Mat &dst, cv::Size dst_size, object_rect &effect_area);
         bool Detect(cv::Mat &raw_image, cv::Rect &target_rect);
         bool set_color(int color);
+
     private:
         unique_ptr<NanoDet> _NanoDet;
         int _my_color;

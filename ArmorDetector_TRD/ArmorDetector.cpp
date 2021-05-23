@@ -22,6 +22,7 @@ SOFTWARE.
 
 #pragma once
 #include "ArmorDetector.h"
+#define pi 3.14159265
 
 
 namespace hnurm
@@ -196,15 +197,15 @@ void ArmorDetector::CreateArmor(LightBarInfo lrect, LightBarInfo rrect, Armor &d
 {
     Point2f tmp_points[4]; // 0tl 1dl 2tr 3dr
     //left light
-    tmp_points[0].x = lrect.core.x + lrect.long_edge * cos(lrect.angle);
-    tmp_points[0].y = lrect.core.y - lrect.long_edge * sin(lrect.angle);
-    tmp_points[1].x = lrect.core.x - lrect.long_edge * cos(lrect.angle);
-    tmp_points[1].y = lrect.core.y + lrect.long_edge * sin(lrect.angle);
+    tmp_points[0].x = lrect.core.x + lrect.long_edge * cos(lrect.angle*pi/180);
+    tmp_points[0].y = lrect.core.y - lrect.long_edge * sin(lrect.angle*pi/180);
+    tmp_points[1].x = lrect.core.x - lrect.long_edge * cos(lrect.angle*pi/180);
+    tmp_points[1].y = lrect.core.y + lrect.long_edge * sin(lrect.angle*pi/180);
     //right light
-    tmp_points[2].x = rrect.core.x + rrect.long_edge * cos(rrect.angle);
-    tmp_points[2].y = rrect.core.y - rrect.long_edge * sin(rrect.angle);
-    tmp_points[3].x = rrect.core.x - rrect.long_edge * cos(rrect.angle);
-    tmp_points[3].y = rrect.core.y + rrect.long_edge * sin(rrect.angle);
+    tmp_points[2].x = rrect.core.x + rrect.long_edge * cos(rrect.angle*pi/180);
+    tmp_points[2].y = rrect.core.y - rrect.long_edge * sin(rrect.angle*pi/180);
+    tmp_points[3].x = rrect.core.x - rrect.long_edge * cos(rrect.angle*pi/180);
+    tmp_points[3].y = rrect.core.y + rrect.long_edge * sin(rrect.angle*pi/180);
 
     Armor temp_armor(tmp_points);
     dst = temp_armor;

@@ -27,15 +27,7 @@ namespace hnurm
                 std::cout << "Unknown mode" << std::endl;
                 break;
         }
-        if (tmp_se.raw_data.work_mode == Protocol::Work_mode::auto_shoot)
-        {
-            if(!_Armor_Detector->Detect(current_frame, target_rect))
-            {
-                cv::imshow("TestWindow", current_frame);
-                cv::waitKey(1);
-                std::cout << "No Armor" << std::endl;
-                return;
-            }
+        if (tmp_se.raw_datInit
             rectangle(current_frame, target_rect, Scalar(0,255,255), 2);
             imshow("TestWindow",current_frame);
             waitKey(1);
@@ -57,6 +49,19 @@ namespace hnurm
             }
             solved_data.raw_data = _Angle_solver->Solve_Angle(tmp_se.raw_data.abs_angle, 20.0, target_rect);
             solved_data.raw_data.camera_id = raw_image.raw_data.camera_id;
+        }
+    }
+
+
+    void Switcher::SetEnemyColor(Protocol::Self_color mycolor)
+    {
+        if(mycolor==Self_color::red)
+        {
+            enemy_color=Self_color::blue;
+        }
+        else
+        {
+            enemy_color=Self_color::red;
         }
     }
 

@@ -84,7 +84,6 @@ namespace hnurm
         Mat transform_mat;
         Mat remaped_mat;
         Mat trait_vector;
-
     };
 
 }//hnurm

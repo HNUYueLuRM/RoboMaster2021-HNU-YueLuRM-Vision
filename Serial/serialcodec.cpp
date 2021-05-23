@@ -3,6 +3,7 @@
 
 namespace hnurm
 {
+
 // encode and send data to the serial port
 // return true if send succeedd, otherwise return false
 bool SerialCodec::send_data(int cam_id, float pitch, float yaw, float distance)
@@ -11,6 +12,7 @@ bool SerialCodec::send_data(int cam_id, float pitch, float yaw, float distance)
     auto data_str = Protocol::encode(data);
     return Serial::send(data_str) > 0;
 }
+
 
 
 // try receive a valid package within milli_secs
@@ -142,22 +144,25 @@ bool SerialCodec::try_get_recv_data_for(Protocol::Vision_recv_data& recv_data,fl
     }
 }
 
+
+
 bool SerialCodec::set_color(void)
 {
-    Protocol::Vision_recv_data for_color(Protocol::Self_color::none, -1, Protocol::Work_mode::manual, Protocol::Bullet_speed::infantry15);
-//    if(try_get_recv_data_for(for_color, 5000))
-//    {
-//        my_color=for_color.self_color;
-//    }
-//    else
-//    {
-//        std::cout<<"fail to setup self-color"<<std::endl;
-//    }
-    my_color=Protocol::Self_color::red;
+    Protocol::Vision_recv_data a_pack_for_color;
+    float useless;
+    while(a_pack_for_color.self_color==Self_color::none)
+    {
+        try_get_recv_data_for(a_pack_for_color,useless);
+    }
+    std::cout<<"get color successed!"<<std::endl;
+    my_color=a_pack_for_color.self_color;
 }
+
+
 
 Protocol::Self_color SerialCodec::get_color(void)
 {
     return my_color;
 }
+
 }

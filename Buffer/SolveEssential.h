@@ -16,7 +16,7 @@ namespace hnurm
         }
 
         SolveEssential(Protocol::Work_mode mode_,Protocol::Bullet_speed speed_,float abs_angle_):
-                        work_mode(mode_),bullet_speed(speed_),abs_angle(abs_angle)
+                       work_mode(mode_),bullet_speed(speed_),abs_angle(abs_angle)
         {
         }
 
