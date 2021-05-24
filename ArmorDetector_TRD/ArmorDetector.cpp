@@ -313,15 +313,16 @@ int ArmorDetector::PairBars()
             {
                 CreateArmor(final_lights[j], final_lights[i], tmp_armor);
             }
+            
             //continue if there is no number between these two lightbars
             armor_num=defaker.Defake(gamma_img,tmp_armor);
             if (!armor_num)
             {
                 continue;
             }
-//            tmp_armor.type=armor_num;
+            //tmp_armor.type=armor_num;
             all_armors.push_back(tmp_armor);//after all sift conditions,it proves to be a real armor
-           //traverse all pairs
+        //traverse all pairs
         }//loop 1
     }//loop 2
 

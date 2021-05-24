@@ -12,12 +12,16 @@ namespace hnurm
     {
     public:
         
-        Defaker(Size _vector_size):vector_size(_vector_size),svm(make_unique<ml::SVM>())
+        Defaker(Size _vector_size):vector_size(_vector_size),svm(ml::SVM::create()))
         {
             svm->load("/trained SVM model path");
         }
 
-        ~Defaker(){}
+
+
+        ~Defaker()=default;
+
+
 
         int Defake(Mat& _origin_img,Armor& box)
         {
