@@ -11,7 +11,6 @@ TaskSwitcher::TaskSwitcher()
 
     }
 
-
 void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageData> &raw_image, Wrapped<SerialData> &solved_data)
 {
     cv::Mat current_frame = raw_image.raw_data.mat;
@@ -75,7 +74,7 @@ void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageDat
     {
         solved_data.raw_data = _Angle_solver->Solve_Angle(tmp_se.raw_data.abs_angle, 20.0, target_rect);
         solved_data.raw_data.camera_id = raw_image.raw_data.camera_id;
-        makeshift_data=raw_image.raw_data;
+        makeshift_data=solved_data.raw_data;
     }
     else
     {
@@ -89,7 +88,7 @@ void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageDat
 
 void TaskSwitcher::SetEnemyColor(Protocol::Self_color mycolor)
 {
-    if(mycolor==Self_color::red)
+    if(mycolor==Protocol::Self_color::red)
     {
         _Armor_Detector->set_color(0);
     }
@@ -109,8 +108,8 @@ void TaskSwitcher::GetPatchData()
     }
     else
     {
-        makeshift_data.pitch=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT)*makeshift_data.pitch;
-        makeshift_data.yaw=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT)*makeshift_data.yaw;
+        makeshift_data.pitch=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT*makeshift_data.pitch;
+        makeshift_data.yaw=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT*makeshift_data.yaw;
         lost_count++;
     }
 }

@@ -2,7 +2,7 @@
 
 
 //#define __packed __attribute__((packed))
-
+#pragma ocne
 #include <string>
 #include "stdint.h"  
 

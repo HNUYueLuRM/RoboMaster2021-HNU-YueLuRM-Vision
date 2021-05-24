@@ -60,6 +60,7 @@ void ThreadManager::ProcessThread()
     {
         Wrapped<SerialData> tmp_solved_data;
         Wrapped<ImageData> tmp_img;
+        Wrapped<SolveEssential> temp_se;
         if(!image_databuf_ptr->get(tmp_img))
         {
             continue;
