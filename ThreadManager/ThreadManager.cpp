@@ -1,5 +1,5 @@
 #pragma once
-#include"ThreadManager/ThreadManager.h"
+#include"../ThreadManager/ThreadManager.h"
 #include<iostream>
 #include<exception>
 #include<memory>
@@ -13,7 +13,7 @@ ThreadManager::ThreadManager():
     image_databuf_ptr(make_unique< DataBuf<Wrapped<ImageData>>>()),
     se_databuf_ptr(make_unique< DataBuf<Wrapped<SolveEssential>>>()),
     _serial_ptr(make_unique<SerialCodec>()),
-    task_switcher_ptr(make_unique<Switcher>()),
+    task_switcher_ptr(make_unique<TaskSwitcher>()),
     video_capture_ptr(make_unique<CamCapture>())
     {}
 

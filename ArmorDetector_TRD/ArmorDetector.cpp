@@ -51,14 +51,21 @@ void ArmorDetector::Detect(const Mat& raw_frame, Armor& target)
 }
 
 
-//we need to test this process to tell which is faster
+
+void ArmorDetector::SetColor(int _color)
+{
+    target_color=_color;
+}
+
+
+
 void ArmorDetector::SubtractRB()
 {
     uchar *praw_pixel = (uchar*) raw_img.data;
     uchar *pdst_pixel = (uchar*) subtract_img.data;
     int pixel_number =  raw_img.rows *  raw_img.cols;
 
-    if (my_color == Protocol::Self_color::blue)
+    if (target_color == 0)
     {
         for (int i = 0; i < pixel_number; i++)
         {
@@ -70,7 +77,7 @@ void ArmorDetector::SubtractRB()
             pdst_pixel++;
         }
     }
-    else if (my_color == Protocol::Self_color::red)
+    else if (target_color == 1)
     {
         for (int i = 0; i < pixel_number; i++)
         {
@@ -125,7 +132,8 @@ void ArmorDetector::CreateBar()
         {
             temp_rrect = minAreaRect(light_contours[i]);
 
-            //pre-sift lightbars
+            // pre-sift lightbars
+            // and why we use a strange LightBarInfo
             /*  due to the fking opencv4 angle system,we gotta do this process:
             *   ————————————————————>  x-axis
             *   |   ________ width
@@ -160,6 +168,8 @@ void ArmorDetector::CreateBar()
     } //loop
 }
 
+
+
 void ArmorDetector::SiftBar()
 {
     double self_ratio;
@@ -193,6 +203,8 @@ void ArmorDetector::SiftBar()
 #endif
 }
 
+
+
 void ArmorDetector::CreateArmor(LightBarInfo lrect, LightBarInfo rrect, Armor &dst)
 {
     Point2f tmp_points[4]; // 0tl 1dl 2tr 3dr
@@ -210,6 +222,8 @@ void ArmorDetector::CreateArmor(LightBarInfo lrect, LightBarInfo rrect, Armor &d
     Armor temp_armor(tmp_points);
     dst = temp_armor;
 }
+
+
 
 void ArmorDetector::GammaRedress(void)
 {
@@ -257,6 +271,7 @@ int ArmorDetector::PairBars()
 {
 //    int mark = 0;
 
+    //for each bar itself
     pair<float,float> height_s,width_s;
     //for each pair of bars;
     double /*angle_diff,*/ angle_diff, center_diff_ratio, relative_x, height_ratio,width_ratio;
@@ -281,8 +296,8 @@ int ArmorDetector::PairBars()
                                / (final_lights[i].long_edge + final_lights[j].long_edge));
 
             //judge conditions
-            //TODO:
-            //use mark to fluentlize this process,make it less sharp
+//TODO:
+//use mark to fluentlize this process,make it less sharp
 
             if (height_ratio > 1.8)
             {
@@ -300,7 +315,8 @@ int ArmorDetector::PairBars()
             {
                 continue;
             }
-
+//TODO:
+//maybe we can find a better place to construct Defaker..
             Defaker defaker(param.vector_size);
             Armor tmp_armor;
             int armor_num=0;
@@ -313,7 +329,7 @@ int ArmorDetector::PairBars()
             {
                 CreateArmor(final_lights[j], final_lights[i], tmp_armor);
             }
-            
+
             //continue if there is no number between these two lightbars
             armor_num=defaker.Defake(gamma_img,tmp_armor);
             if (!armor_num)
@@ -339,7 +355,6 @@ int ArmorDetector::PairBars()
 #endif
 
     return (int) all_armors.size();
-
 }
 
 
@@ -369,5 +384,6 @@ void ArmorDetector::Reset()
     final_lights.clear();
     all_armors.clear();
 }
+
 
 }//namespace hnrm

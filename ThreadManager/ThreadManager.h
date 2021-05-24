@@ -3,8 +3,8 @@
 #include"../Buffer/DataBuf.hpp"
 #include"../Buffer/SerialData.hpp"
 #include"../Buffer/ImageData.hpp"
-#include"TaskSwitcher/Task_switcher.h"
-#include"../VideoCapture/CamCapture.hpp"
+#include"../TaskSwitcher/TaskSwitcher.h"
+#include"../CamCapture/CamCapture.hpp"
 #include"../Protocol/protocol.h"
 #include"../Buffer/SolveEssential.h"
 
@@ -44,7 +44,7 @@ private:
 
     std::unique_ptr<SerialCodec> _serial_ptr;
 
-    std::unique_ptr<Switcher> task_switcher_ptr;
+    std::unique_ptr<TaskSwitcher> task_switcher_ptr;
 
     std::unique_ptr<CamCapture> video_capture_ptr;
 

@@ -32,49 +32,74 @@ using namespace std;
 
 namespace hnurm
 {
-    //enum ArmorType {}
+//enum ArmorType {}
 
-    class Armor
+/**
+ *  @class Armor  Armor.hpp in ArmorDetector_TRD
+ * 
+ *  @brief Armor is a class for the description of an armor,include for vertexes and the core of this armor
+ */
+class Armor
+{
+
+public:
+
+    Armor()=default;
+
+    /**
+     * @brief Construct a new Armor object with armor_arr
+     * 
+     * @param armor_arr the pointer of array[4],order by top_left-> down_left-> top_right-> down_right
+     */
+    Armor(Point2f* armor_arr)
     {
-    public:
-
-        Armor(){}
-
-        Armor(Point2f* armor_arr)
+        for(int i=0;i<4;i++)
         {
-            for(int i=0;i<4;i++)
-            {
-                vertexes[i]=armor_arr[i];
-            }
-            core.x=(armor_arr[2].x+armor_arr[3].x)/2-(armor_arr[0].x+armor_arr[1].x)/2;
-            core.y=(armor_arr[0].y+armor_arr[1].y+armor_arr[2].y+armor_arr[3].y)/4;
+            vertexes[i]=armor_arr[i];
         }
+        core.x=(armor_arr[2].x+armor_arr[3].x)/2-(armor_arr[0].x+armor_arr[1].x)/2;
+        core.y=(armor_arr[0].y+armor_arr[1].y+armor_arr[2].y+armor_arr[3].y)/4;
+    }
 
-        Armor operator=(const Armor& _armor)
+
+    /**
+     * @brief overload '=' for Armor
+     * 
+     * @param _armor a receive value
+     * @return Armor 
+     */
+    Armor operator=(const Armor& _armor)
+    {
+        Armor temp_armor;
+        for(int i=0;i<4;i++)
         {
-            Armor temp_armor;
-            for(int i=0;i<4;i++)
-            {
-                temp_armor.vertexes[i]=_armor.vertexes[i];
-            }
-            temp_armor.core=_armor.core;
-            return temp_armor;
+            temp_armor.vertexes[i]=_armor.vertexes[i];
         }
+        temp_armor.core=_armor.core;
+        return temp_armor;
+    }
 
-        void DrawArmor(Mat& canvas)
+
+    /**
+     * @brief Draw this Armor in canvas
+     * 
+     * @param canvas where the armor gone be drew
+     */
+    void DrawArmor(Mat& canvas)
+    {
+        for (int i = 0; i < 4; i++)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                line(canvas, vertexes[i], vertexes[(i + 1) % 4], Scalar(0,255,0), 2);
-            }
+            line(canvas, vertexes[i], vertexes[(i + 1) % 4], Scalar(0,255,0), 2);
         }
+    }
 
-    public:
+public:
 
-        Point2f vertexes[4];
-        Point2f core;
-        //ArmorType type;
+    Point2f vertexes[4];
+    Point2f core;
 
-    };//Armor
+    //ArmorType type;
+
+};//Armor
 
 }//hnurm

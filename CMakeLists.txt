@@ -32,7 +32,7 @@ file(GLOB SOURCES
         Serial/serialcodec.h
         TaskSwitcher/*
         ThreadManager/*
-        VideoCapture/*
+        CamCapture/*
         ArmorTracker/*
         nanodet/*
         )

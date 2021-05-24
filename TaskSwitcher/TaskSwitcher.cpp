@@ -1,8 +1,9 @@
-#include "../TaskSwitcher/Task_switcher.h"
+#include "../TaskSwitcher/TaskSwitcher.h"
 
 namespace hnurm
 {
-Switcher::Switcher()
+
+TaskSwitcher::TaskSwitcher()
     : _Armor_tracker(make_unique<Armor_tracker>()),
         _Angle_solver(make_unique<AngleSolver>()),
         _Armor_Detector(make_unique<ArmorDetector>())
@@ -11,7 +12,7 @@ Switcher::Switcher()
     }
 
 
-void Switcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageData> &raw_image, Wrapped<SerialData> &solved_data)
+void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageData> &raw_image, Wrapped<SerialData> &solved_data)
 {
     cv::Mat current_frame = raw_image.raw_data.mat;
     cv::Rect target_rect;
@@ -79,21 +80,21 @@ void Switcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageData> &
     
 
 
-void Switcher::SetEnemyColor(Protocol::Self_color mycolor)
+void TaskSwitcher::SetEnemyColor(Protocol::Self_color mycolor)
 {
     if(mycolor==Self_color::red)
     {
-        enemy_color=Self_color::blue;
+        _Armor_Detector->set_color(0);
     }
     else
     {
-        enemy_color=Self_color::red;
+        _Armor_Detector->set_color(1);
     }
 }
 
 
 
-void Switcher::GetPatchData()
+void TaskSwitcher::GetPatchData()
 {
     if(lost_count>5)
     {

@@ -12,7 +12,7 @@ namespace hnurm
     {
     public:
         
-        Defaker(Size _vector_size):vector_size(_vector_size),svm(ml::SVM::create()))
+        Defaker(Size _vector_size):vector_size(_vector_size),svm(ml::SVM::create())
         {
             svm->load("/trained SVM model path");
         }

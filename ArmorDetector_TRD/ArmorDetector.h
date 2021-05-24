@@ -31,17 +31,20 @@ Authors: Zeng QingCheng, <neozng1@hnu.edu.cn>
 #include <vector>
 #include <string>
 #include <math.h>
+#include "../Protocol/protocol.h"
 #include "Armor.hpp"
 #include "LightBarInfo.hpp"
-#include "Defaker.hpp""
-#include "../Protocol/protocol.h"
+#include "Defaker.hpp"
+
 
 using namespace std;
 using namespace cv; 
 
 namespace hnurm
 {
-    //struct for param
+    /**
+     * @brief Params read from outer file
+     */
     struct Param
     {
         int color_threshold_value;       //color threshold value
@@ -55,50 +58,97 @@ namespace hnurm
 
 
 
-    //class for image pre-processing,such as split,dilate,errode
+    /**
+     * @class ArmorDetector  ArmorDetector.h in root
+     * @brief class for detecting armors;
+     * 
+     */
     class ArmorDetector
     {
     public:
 
-        //we need to do something when constructing..
+        /**
+         * @brief Construct a new Armor Detector object,initialize param
+         * 
+         */
         ArmorDetector();
 
-        //it seems that this could be deleted
         ~ArmorDetector()=default;
 
-        //return with target Armor
+        /**
+         * @brief public API of ArmorDetector
+         * 
+         * @param raw_frame raw_frame read from image_buffer
+         * @param target    the best armor we recognize from this frame
+         */
         void Detect(const Mat& raw_frame,Armor& target);
 
+        /**
+         * @brief Set the Target Color to tell which color to detect
+         * 
+         * @param _target_color target color: 0 blue / 1 red
+         */
+        void SetColor(int _color);
 
     private:
 
-        //split colorspace then subtract G/B
+        /**
+         * @brief split colorspace then subtract G/B(B/R)
+         * @param private_member
+         */
         void SubtractRB(void);
 
-        //return image which has been processed
+        /**
+         * @brief Get the Cooked frame,including subtractRB,dialte,errode(close)
+         * @param private_member
+         */
         void GetCooked(void);
 
-        //get lightbar from the cooked image
+        /**
+         * @brief get lightbars from the cooked image
+         * @param private_member
+         */
         void CreateBar(void);
 
-        //sift the contours of possible lightbar
+        /**
+         * @brief sift possible lightbar with more rigorous rules
+         * @param private_member
+         */
         void SiftBar(void);
 
-        //use two lightbars to create an armor
+        /**
+         * @brief use two lightbars to create an armor
+         * 
+         * @param lrect the left lightbar of this possible armor,which described using a LightBarInfo
+         * @param rrect the right lightbar of this possible armor,which described using a LightBarInfo
+         * @param dst where we return the result
+         */
         void CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst);
 
-        //
+        /**
+         * @brief a gamma redress function
+         * @param private_member
+         */
         void GammaRedress(void);
 
-        //pair those lightbars and mark them
+        /**
+         * @brief pair those lightbars to create armor and mark them 
+         * @param private_member
+         * @return int how many armors we recognize in this frame
+         */
         int PairBars(void);
 
-        //choose one armor to attack
-        //return with the index of choosed armor
+        /**
+         * @brief Choose one armor from buffer
+         * @param private_member
+         * @return int the index of choosed armor in private_member:all_armors
+         */
         int Choose(void);
 
-        
-
+        /**
+         * @brief clear all private buffer
+         * @param private_member
+         */
         void Reset(void);
 
     private:
@@ -110,30 +160,29 @@ namespace hnurm
     private:
         //mat for image processing,which store some mediate images
         //maybe we can pack these varas into a struct...
-        Mat raw_img;				//1原始图像
-        Mat gamma_img;              //2伽马矫正过后的图像
-        Mat subtract_img;           //3image after subtracting G/B
-        Mat filter_img;             //4filter these img above using a kernel
-        Mat brightness_img;         //5颜色二值化图片
-        Mat eroded_img;				//6【eroded】
-        Mat dilated_img;		    //7【dilated]
-        Mat cooked_img;             //process done
+        Mat raw_img;				//1 [raw] origin img
+        Mat gamma_img;              //2 [GammaRedress] img after gamma redress
+        Mat subtract_img;           //3 [SubtractRB] image after subtracting G/B
+        Mat filter_img;             //4 [NoiseFilter] filt these img above using a kernel
+        Mat brightness_img;         //5 [ThresholdBrightness]
+        Mat eroded_img;				//6 [erode]
+        Mat dilated_img;		    //7 [dilate]
+        Mat cooked_img;             //process all done
 
 
     private:
         //vetors for the lightbar(contours and bars)
-        vector<vector<Point>>      light_contours;             //1 function cv::findcontour() will return a series of coutours,composed by points.
-        vector<Vec4i>              light_hierachy;             //1
-        vector<LightBarInfo>       light_rect;                 //2 refer {minAreaRect} to store lightbar rects
-        vector<LightBarInfo>       final_lights;               //3 light bars sifted,with light information
-        vector<Armor>              all_armors;                 //3 armors info,for vertexes and the center of amor
+        vector<vector<Point>>      light_contours;     //1 function cv::findcontour() will return a series of coutours,composed by points.
+        vector<Vec4i>              light_hierachy;     //1 funciton cv::findcontour() will return the hierachy of outline,useless temporary.
+        vector<LightBarInfo>       light_rect;         //2 to store fitting rect from cv::minAreaRect()
+        vector<LightBarInfo>       final_lights;       //3 light bars sifted,with light information
+        vector<Armor>              all_armors;         //3 armors info,for vertexes and the center of amor
 
     private:
 
-        Protocol::Self_color my_color;//where and when to get mycolor from serial or TaskSwitcher?
+        int target_color;  //enemy color [0] for blue, [1] for red
 
     };//armordetector
-
 
 }//hnurm
 
