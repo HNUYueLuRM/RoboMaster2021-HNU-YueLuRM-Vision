@@ -14,7 +14,7 @@ int main()
 
     generate.join();
     process.join();
-    receive.join();
+    //receive.join();
     send.join();
 
     return 0;

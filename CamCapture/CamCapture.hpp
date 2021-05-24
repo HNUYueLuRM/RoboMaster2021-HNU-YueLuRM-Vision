@@ -22,7 +22,7 @@ class CamCapture
 {
 public:
 
-    CamCapture() {}
+    CamCapture(){}
 
     void init(int camera_id_, float PROP_BRIGHTNESS_ = 0)
     {

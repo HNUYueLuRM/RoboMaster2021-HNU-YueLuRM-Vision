@@ -25,7 +25,6 @@ void ThreadManager::InitAll()
     if(!_serial_ptr->open_port("/dev/ttyUSB0"))
     {
         cout<<"can't open port"<<endl;
-
     }
     _serial_ptr->rm_init();
 	_serial_ptr->set_color();

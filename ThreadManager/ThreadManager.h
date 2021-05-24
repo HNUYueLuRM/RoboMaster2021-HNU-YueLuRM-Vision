@@ -19,18 +19,39 @@ class ThreadManager
 {
 
 public:
+	/**
+	 * @brief Construct a new Thread Manager object,init all ptrs
+	 */
 	ThreadManager();
 
+	/**
+	 * @brief Destroy the Thread Manager object
+	 */
     ~ThreadManager(){}
 
+	/**
+	 * @brief Init all task,serial/taskswicher/camera
+	 */
 	void InitAll();
 
+	/**
+	 * @brief thread where camera generate raw frame
+	 */
 	void GenerateThread();
 
+	/**
+	 * @brief process raw frame and solve them,save solved data to send buffer
+	 */
 	void ProcessThread();
 
+	/**
+	 * @brief receive color/angle and other info from stm32
+	 */
 	void ReceiveThread();
 
+	/**
+	 * @brief send data from buffer to serial(STM32)
+	 */
     void SendThread();
 
 
