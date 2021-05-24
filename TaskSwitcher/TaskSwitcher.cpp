@@ -30,15 +30,22 @@ void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageDat
             break;
     }
 
-    if (tmp_se.raw_data.work_mode==Protocol::Work_mode::auto_shoot)
+    if(tmp_se.raw_data.work_mode==Protocol::Work_mode::auto_shoot)
     {
-        //if(_armorDetector->Detect(...))
-        //{
-        //    lost_count=0;
-        //}
-        rectangle(current_frame, target_rect, Scalar(0,255,255), 2);
-        imshow("TestWindow",current_frame);
-        waitKey(1);
+        if(!_Armor_Detector->Detect(current_frame, target_rect))
+        {
+            cv::imshow("TestWindow", current_frame);
+            cv::waitKey(1);
+            std::cout << "No Armor" << std::endl;
+        }
+        else
+        {
+            lost_count=0;
+            rectangle(current_frame, target_rect, Scalar(0,255,255), 2);
+            imshow("TestWindow",current_frame);
+            waitKey(1);
+        }
+
         float speed;
         switch (tmp_se.raw_data.bullet_speed)
         {
