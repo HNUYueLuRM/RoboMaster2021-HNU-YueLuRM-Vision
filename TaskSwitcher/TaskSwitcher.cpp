@@ -36,6 +36,7 @@ void TaskSwitcher::RunSwitcher(Wrapped<SolveEssential> &tmp_se, Wrapped<ImageDat
             cv::imshow("TestWindow", current_frame);
             cv::waitKey(1);
             std::cout << "No Armor" << std::endl;
+            lost_count++;
         }
         else
         {
@@ -102,15 +103,14 @@ void TaskSwitcher::SetEnemyColor(Protocol::Self_color mycolor)
 
 void TaskSwitcher::GetPatchData()
 {
-    if(lost_count>5)
+    if(lost_count>6)
     {
         makeshift_data=SerialData(0,0,0,0);
     }
     else
     {
-        makeshift_data.pitch=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT*makeshift_data.pitch;
-        makeshift_data.yaw=(MAX_LOST_COUNT-lost_count)/MAX_LOST_COUNT*makeshift_data.yaw;
-        lost_count++;
+        makeshift_data.pitch=(MAX_LOST_COUNT-lost_count+1)/MAX_LOST_COUNT*makeshift_data.pitch;
+        makeshift_data.yaw=(MAX_LOST_COUNT-lost_count+1)/MAX_LOST_COUNT*makeshift_data.yaw;
     }
 }
 

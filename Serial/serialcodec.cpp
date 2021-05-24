@@ -148,7 +148,7 @@ bool SerialCodec::try_get_recv_data_for(Protocol::Vision_recv_data& recv_data,fl
 
 bool SerialCodec::set_color(void)
 {
-    Protocol::Vision_recv_data a_pack_for_color;
+    Protocol::Vision_recv_data a_pack_for_color(Self_color::none,0,Work_mode::manual,Bullet_speed::hero10);
     float useless;
     while(a_pack_for_color.self_color==Self_color::none)
     {

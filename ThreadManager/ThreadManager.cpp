@@ -36,12 +36,9 @@ void ThreadManager::InitAll()
 void ThreadManager::GenerateThread()
 {
     Mat frame;
-    VideoCapture capture(0);
     while(1)
     {
         Wrapped<ImageData> tmp;
-        capture >> frame;
-        tmp.raw_data.mat = frame;
         tmp.raw_data.camera_id = 0;
         if(video_capture_ptr->get_frame(tmp))
         {
@@ -60,6 +57,7 @@ void ThreadManager::ProcessThread()
         Wrapped<SerialData> tmp_solved_data;
         Wrapped<ImageData> tmp_img;
         Wrapped<SolveEssential> temp_se;
+        temp_se.raw_data.work_mode=Protocol::Work_mode::auto_shoot;
         if(!image_databuf_ptr->get(tmp_img))
         {
             continue;
