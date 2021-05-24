@@ -11,6 +11,8 @@
 #include "../Buffer/SolveEssential.h"
 #include "../Protocol/protocol.h"
 
+#define MAX_LOST_COUNT 5
+
 namespace hnurm
 {
 
@@ -25,12 +27,17 @@ public:
 
     void SetEnemyColor(Protocol::Self_color mycolor);
 
-
 private:
+
+    void GetPatchData(void);
+
     std::unique_ptr<Armor_tracker> _Armor_tracker;
     std::unique_ptr<AngleSolver> _Angle_solver;
     std::unique_ptr<ArmorDetector> _Armor_Detector;
     Protocol::Self_color enemy_color;
+
+    int lost_count;
+    SerialData makeshift_data;
 	};
 
 }

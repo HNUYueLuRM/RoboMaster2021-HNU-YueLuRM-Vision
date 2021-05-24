@@ -21,12 +21,20 @@ public:
     SerialData():
         camera_id(0), pitch(0), yaw(0), distance(0)
     {
-        
     }
+
+
+
     SerialData(uint8_t cam_id, float pitch_, float yaw_, float distance_):
         camera_id(cam_id), pitch(pitch_), yaw(yaw_), distance(distance_)
     {
     }
+
+    SerialData operator=(const SerialData& tmp)
+    {
+        return SerialData(tmp.camera_id,tmp.pitch,tmp.yaw,tmp.distance);
+    }
+
     void set(uint8_t cam_id, float pitch_, float yaw_, float distance_)
     {
         camera_id = cam_id;
