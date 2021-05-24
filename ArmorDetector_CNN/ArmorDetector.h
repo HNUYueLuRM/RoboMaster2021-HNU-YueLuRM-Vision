@@ -32,6 +32,7 @@ namespace hnurm
         
     private:
         unique_ptr<NanoDet> _NanoDet;
+        //why so many color here...
         int _my_color;
         //Protocol::Self_color my_color;
     };
