@@ -126,12 +126,6 @@ namespace hnurm
         void CreateArmor(LightBarInfo lrect,LightBarInfo rrect,Armor& dst);
 
         /**
-         * @brief a gamma redress function
-         * @param private_member
-         */
-        void GammaRedress(void);
-
-        /**
          * @brief pair those lightbars to create armor and mark them 
          * @param private_member
          * @return int how many armors we recognize in this frame
@@ -161,12 +155,11 @@ namespace hnurm
         //mat for image processing,which store some mediate images
         //maybe we can pack these varas into a struct...
         Mat raw_img;				//1 [raw] origin img
-        Mat gamma_img;              //2 [GammaRedress] img after gamma redress
-        Mat subtract_img;           //3 [SubtractRB] image after subtracting G/B
-        Mat filter_img;             //4 [NoiseFilter] filt these img above using a kernel
-        Mat brightness_img;         //5 [ThresholdBrightness]
-        Mat eroded_img;				//6 [erode]
-        Mat dilated_img;		    //7 [dilate]
+        Mat subtract_img;           //2 [SubtractRB] image after subtracting G/B
+        Mat filter_img;             //3 [NoiseFilter] filt these img above using a kernel
+        Mat brightness_img;         //4 [ThresholdBrightness]
+        Mat eroded_img;				//5 [erode]
+        Mat dilated_img;		    //6 [dilate]
         Mat cooked_img;             //process all done
 
 
