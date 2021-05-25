@@ -152,12 +152,12 @@ namespace hnurm
 
     private:
 
-        Size vector_size;
-        Mat origin_img;
-        Mat gamma_img;
-        Mat transform_mat;
-        Mat remaped_mat;
-        Mat trait_vector;
+        Size vector_size;  //size of trait vetor
+        Mat origin_img;    //origin img
+        Mat transform_mat; //Mat for transformation
+        Mat remaped_mat;   //Mat remaped
+        Mat gamma_img;     //img after gamma redress
+        Mat trait_vector;  //trait vetor
     };
 
 }//hnurm

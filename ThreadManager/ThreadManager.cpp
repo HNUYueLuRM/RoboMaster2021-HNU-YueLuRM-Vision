@@ -44,7 +44,7 @@ void ThreadManager::GenerateThread()
         {
             image_databuf_ptr->update(tmp);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(7));
     }
 }
 
@@ -64,7 +64,7 @@ void ThreadManager::ProcessThread()
         }
         task_switcher_ptr->RunSwitcher(temp_se, tmp_img, tmp_solved_data);
         serial_databuf_ptr->update(tmp_solved_data);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(7));
     }
 }
 
@@ -84,7 +84,7 @@ void ThreadManager::ReceiveThread()
             se_databuf_ptr->update(temp_se_data);
 		}
         se_databuf_ptr->update(temp_se_data);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(7));
 	}
 }
 
@@ -101,7 +101,7 @@ void ThreadManager::SendThread()
         }
         _serial_ptr->send_data(tmp.raw_data.camera_id,tmp.raw_data.pitch,tmp.raw_data.yaw,tmp.raw_data.distance);
         //std::cout<<tmp.raw_data.yaw<<" "<<tmp.raw_data.pitch<<" "<<tmp.raw_data.distance<<std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(7));
     }
 
 }

@@ -30,8 +30,11 @@ using namespace std;
 
 namespace hnurm
 {
-    //cause the angle system for opencv4.*,we have to create a new class for RotatedRect
-    //class to descript a light bar
+    /**
+     * @class LightBarInfo LightBarinfo.hpp in ArmorDetector_TRD
+     * @brief cause the angle system for opencv4.*,we have to create a new class for RotatedRect
+     *        member including longedge,shortedge,core,angle and a raw rotated rect
+     */
     class LightBarInfo
     {
     public:
@@ -60,6 +63,11 @@ namespace hnurm
 
     public:
 
+        /**
+         * @brief draw this lightbar in canvas img
+         * 
+         * @param canvas where the light bar will be drawn
+         */
         void DrawLightBar(Mat& canvas)
         {
             Point2f tmp_points[4];
@@ -76,6 +84,7 @@ namespace hnurm
         Point2f core;
         float long_edge;
         float short_edge;
-        double angle;
+        double angle;  //anti-clockwise
     };
-}
+
+}//hnurm

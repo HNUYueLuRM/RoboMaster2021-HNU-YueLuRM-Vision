@@ -18,62 +18,57 @@ using namespace cv;
 namespace hnurm
 {
 
-class CamCapture
-{
-public:
-
-    CamCapture(){}
-
-    void init(int camera_id_, float PROP_BRIGHTNESS_ = 0)
+    class CamCapture
     {
-        camera_id = camera_id_;
-        PROP_BRIGHTNESS = PROP_BRIGHTNESS_;
-        mycap = make_unique<VideoCapture>(camera_id_);
-    }
+    public:
+        CamCapture() {}
 
-
-
-    bool get_frame(Wrapped<ImageData> &tmp)
-    {
-        auto t = (double)cv::getTickCount();
-
-        mycap->set(6, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-        try
+        void init(int camera_id_, float PROP_BRIGHTNESS_ = 0)
         {
-            if (!mycap->isOpened())
+            camera_id = camera_id_;
+            PROP_BRIGHTNESS = PROP_BRIGHTNESS_;
+            mycap = make_unique<VideoCapture>(camera_id_);
+        }
+
+        bool get_frame(Wrapped<ImageData> &tmp)
+        {
+            auto t = (double)cv::getTickCount();
+
+            mycap->set(6, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+            try
             {
-                throw "cam failed to open.Check your cam id.";
+                if (!mycap->isOpened())
+                {
+                    throw "cam failed to open.Check your cam id.";
+                }
+                mycap->set(CAP_PROP_BRIGHTNESS, PROP_BRIGHTNESS, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+                cv::Mat temp_frame;
+                (*mycap) >> temp_frame;
+
+                temp_frame.convertTo(tmp.raw_data.mat, temp_frame.type(), 1, 30);
+                //(*mycap) >> tmp.raw_data.mat;
+
+                tmp.raw_data.camera_id = camera_id;
+
+                return true;
             }
-            mycap->set(CAP_PROP_BRIGHTNESS, PROP_BRIGHTNESS);
-            cv::Mat temp_frame;
-            (*mycap) >> temp_frame;
 
-            temp_frame.convertTo(tmp.raw_data.mat, temp_frame.type(), 1, 30);
-            //(*mycap) >> tmp.raw_data.mat;
-
-            tmp.raw_data.camera_id = camera_id;
-
-            return true;
+            catch (char *&e)
+            {
+                std::cerr << "try catch test" << endl;
+            }
+            return false;
         }
 
-        catch (char *&e)
-        {
-            std::cerr << "try catch test" << endl;
-        }
-        return false;
-    }
+    private:
+        int camera_id = 0; //相机id
 
+        Mat frame;
 
-private:
+        int PROP_BRIGHTNESS = 0; //0-1
 
-    int camera_id = 0; //相机id
+        unique_ptr<VideoCapture> mycap;
 
-    Mat frame;
+    }; //CamCapture
 
-    int PROP_BRIGHTNESS = 0; //0-1
-
-    unique_ptr<VideoCapture> mycap;
-    
-    };//CamCapture
-
-}//hnurm
+} //hnurm
