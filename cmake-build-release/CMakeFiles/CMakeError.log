@@ -1,0 +1,45 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/pc/Merge/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_9640d/fast && /usr/bin/make  -f CMakeFiles/cmTC_9640d.dir/build.make CMakeFiles/cmTC_9640d.dir/build
+make[1]: Entering directory '/home/pc/Merge/cmake-build-release/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_9640d.dir/src.c.o
+/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_9640d.dir/src.c.o -c /home/pc/Merge/cmake-build-release/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_9640d
+/snap/clion/149/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9640d.dir/link.txt --verbose=1
+/usr/bin/cc CMakeFiles/cmTC_9640d.dir/src.c.o -o cmTC_9640d 
+CMakeFiles/cmTC_9640d.dir/src.c.o：在函数‘main’中：
+src.c:(.text+0x3c)：对‘pthread_create’未定义的引用
+src.c:(.text+0x48)：对‘pthread_detach’未定义的引用
+src.c:(.text+0x54)：对‘pthread_cancel’未定义的引用
+src.c:(.text+0x65)：对‘pthread_join’未定义的引用
+src.c:(.text+0x79)：对‘pthread_atfork’未定义的引用
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_9640d.dir/build.make:105: recipe for target 'cmTC_9640d' failed
+make[1]: *** [cmTC_9640d] Error 1
+make[1]: Leaving directory '/home/pc/Merge/cmake-build-release/CMakeFiles/CMakeTmp'
+Makefile:140: recipe for target 'cmTC_9640d/fast' failed
+make: *** [cmTC_9640d/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
